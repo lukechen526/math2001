@@ -46,14 +46,21 @@ example {x : ℤ} : x ^ 3 ≡ x [ZMOD 3] := by
 
 
 example {n : ℤ} (hn : n ≡ 1 [ZMOD 3]) : n ^ 3 + 7 * n ≡ 2 [ZMOD 3] :=
-  sorry
+  calc
+    n ^ 3 + 7 * n ≡ 1 ^ 3 + 7 * 1 [ZMOD 3] := by rel [hn]
+    _ = 8 := by numbers
+    _ = 2 + 3 * 2 := by numbers
+    _ ≡ 2 [ZMOD 3] := by extra
 
 example {a : ℤ} (ha : a ≡ 3 [ZMOD 4]) :
     a ^ 3 + 4 * a ^ 2 + 2 ≡ 1 [ZMOD 4] :=
   sorry
 
-example (a b : ℤ) : (a + b) ^ 3 ≡ a ^ 3 + b ^ 3 [ZMOD 3] :=
-  sorry
+example (a b : ℤ) : (a + b) ^ 3 ≡ a ^ 3 + b ^ 3 [ZMOD 3] := by
+  calc
+    (a + b) ^ 3 = a ^ 3 + b ^ 3 + 3 * a ^ 2 * b + 3 * a * b ^2  := by ring
+                _ = a ^ 3 + b ^ 3 + 3 * (a ^ 2 * b + a * b ^2) := by ring
+                _ ≡ a ^ 3 + b ^ 3 [ZMOD 3] := by extra
 
 example : ∃ a : ℤ, 4 * a ≡ 1 [ZMOD 7] := by
   sorry
@@ -65,4 +72,27 @@ example (n : ℤ) : 5 * n ^ 2 + 3 * n + 7 ≡ 1 [ZMOD 2] := by
   sorry
 
 example {x : ℤ} : x ^ 5 ≡ x [ZMOD 5] := by
-  sorry
+  mod_cases hx : x % 5
+  calc
+    x ^ 5 ≡ 0 ^ 5 [ZMOD 5] := by rel [hx]
+    _ = 0 := by numbers
+    _ ≡ x [ZMOD 5] := by rel [hx]
+  calc
+    x ^ 5 ≡ 1 ^ 5 [ZMOD 5] := by rel [hx]
+    _ = 1 := by numbers
+    _ ≡ x [ZMOD 5] := by rel [hx]
+  calc
+    x ^ 5 ≡ 2 ^ 5 [ZMOD 5] := by rel [hx]
+    _ = 2 + 5 * 6 := by numbers
+    _ ≡ 2 [ZMOD 5] := by extra
+    _ ≡ x [ZMOD 5] := by rel [hx]
+  calc
+    x ^ 5 ≡ 3 ^ 5 [ZMOD 5] := by rel [hx]
+    _ = 3 + 5 * 48 := by numbers
+    _ ≡ 3 [ZMOD 5] := by extra
+    _ ≡ x [ZMOD 5] := by rel [hx]
+  calc
+    x ^ 5 ≡ 4 ^ 5 [ZMOD 5] := by rel [hx]
+    _ = 4 + 5 * 204 := by numbers
+    _ ≡ 4 [ZMOD 5] := by extra
+    _ ≡ x [ZMOD 5] := by rel [hx]
