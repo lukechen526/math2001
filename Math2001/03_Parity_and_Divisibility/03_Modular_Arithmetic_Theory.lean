@@ -10,7 +10,8 @@ example : 11 ≡ 3 [ZMOD 4] := by
   numbers
 
 example : -5 ≡ 1 [ZMOD 3] := by
-  sorry
+  use -2
+  numbers
 
 theorem Int.ModEq.add {n a b c d : ℤ} (h1 : a ≡ b [ZMOD n]) (h2 : c ≡ d [ZMOD n]) :
     a + c ≡ b + d [ZMOD n] := by
@@ -26,10 +27,23 @@ theorem Int.ModEq.add {n a b c d : ℤ} (h1 : a ≡ b [ZMOD n]) (h2 : c ≡ d [Z
 
 theorem Int.ModEq.sub {n a b c d : ℤ} (h1 : a ≡ b [ZMOD n]) (h2 : c ≡ d [ZMOD n]) :
     a - c ≡ b - d [ZMOD n] := by
-  sorry
+  dsimp [Int.ModEq] at *
+  obtain ⟨x, hx⟩ := h1
+  obtain ⟨y, hy⟩ := h2
+  use x - y
+  calc
+    a - c - (b - d) = a - b - (c - d) := by ring
+    _ = n * x - n * y := by rw [hx, hy]
+    _ = n * (x - y) := by ring
 
 theorem Int.ModEq.neg {n a b : ℤ} (h1 : a ≡ b [ZMOD n]) : -a ≡ -b [ZMOD n] := by
-  sorry
+  dsimp [Int.ModEq] at *
+  obtain ⟨x, hx⟩ := h1
+  use -x
+  calc
+    -a - (-b) = -(a - b) := by ring
+    _ = -(n * x) := by rw [hx]
+    _ = n * (-x) := by ring
 
 theorem Int.ModEq.mul {n a b c d : ℤ} (h1 : a ≡ b [ZMOD n]) (h2 : c ≡ d [ZMOD n]) :
     a * c ≡ b * d [ZMOD n] := by
@@ -52,7 +66,13 @@ theorem Int.ModEq.pow_two (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := b
 
 
 theorem Int.ModEq.pow_three (h : a ≡ b [ZMOD n]) : a ^ 3 ≡ b ^ 3 [ZMOD n] := by
-  sorry
+  dsimp [Int.ModEq] at *
+  obtain ⟨x, hx⟩ := h
+  use x * (a ^ 2 + a * b + b ^ 2)
+  calc
+    a ^ 3 - b ^ 3 = (a - b) * (a ^ 2 + a * b + b ^ 2) := by ring
+    _ = n * x * (a ^ 2 + a * b + b ^ 2) := by rw [hx]
+    _ = n * (x * (a ^ 2 + a * b + b ^ 2)) := by ring
 
 theorem Int.ModEq.pow (k : ℕ) (h : a ≡ b [ZMOD n]) : a ^ k ≡ b ^ k [ZMOD n] :=
   sorry -- we'll prove this later in the book
@@ -97,11 +117,22 @@ example : 34 ≡ 104 [ZMOD 5] := by
   sorry
 
 theorem Int.ModEq.symm (h : a ≡ b [ZMOD n]) : b ≡ a [ZMOD n] := by
-  sorry
+  obtain ⟨x, hx⟩ := h
+  use -x
+  calc
+    b - a = -(a - b) := by ring
+    _ = -(n * x) := by rw [hx]
+    _ = n * (-x) := by ring
 
 theorem Int.ModEq.trans (h1 : a ≡ b [ZMOD n]) (h2 : b ≡ c [ZMOD n]) :
     a ≡ c [ZMOD n] := by
-  sorry
+  obtain ⟨x, hx⟩ := h1
+  obtain ⟨y, hy⟩ := h2
+  use x + y
+  calc
+    a - c = (a - b) + (b - c) := by ring
+    _ = n * x + n * y := by rw [hx, hy]
+    _ = n * (x + y) := by ring
 
 example : a + n * c ≡ a [ZMOD n] := by
   sorry
@@ -115,4 +146,11 @@ example {m n : ℤ} (h : m ≡ n [ZMOD 4]) : 3 * m - 1 ≡ 3 * n - 1 [ZMOD 4] :=
 
 example {k : ℤ} (hb : k ≡ 3 [ZMOD 5]) :
     4 * k + k ^ 3 + 3 ≡ 4 * 3 + 3 ^ 3 + 3 [ZMOD 5] := by
-  sorry
+  apply Int.ModEq.add
+  apply Int.ModEq.add
+  apply Int.ModEq.mul
+  apply Int.ModEq.refl
+  apply hb
+  apply Int.ModEq.pow_three
+  apply hb
+  apply Int.ModEq.refl
