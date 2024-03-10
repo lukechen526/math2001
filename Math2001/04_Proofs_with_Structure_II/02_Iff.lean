@@ -43,7 +43,13 @@ theorem odd_iff_modEq (n : ℤ) : Odd n ↔ n ≡ 1 [ZMOD 2] := by
     dsimp [(· ∣ ·)]
     use k
     addarith [hk]
-  · sorry
+  · intro ha
+    dsimp [Int.ModEq] at ha
+    dsimp [(· ∣ ·)] at ha
+    obtain ⟨k, hk⟩ := ha
+    dsimp [Int.Odd]
+    use k
+    addarith [hk]
 
 theorem even_iff_modEq (n : ℤ) : Even n ↔ n ≡ 0 [ZMOD 2] := by
   constructor
@@ -53,13 +59,73 @@ theorem even_iff_modEq (n : ℤ) : Even n ↔ n ≡ 0 [ZMOD 2] := by
     dsimp [(· ∣ ·)]
     use k
     addarith [hk]
-  · sorry
+  · intro h
+    dsimp [Int.ModEq] at h
+    dsimp [(· ∣ ·)] at h
+    obtain ⟨k, hk⟩ := h
+    dsimp [Int.Even]
+    use k
+    addarith [hk]
 
 example {x : ℝ} : x ^ 2 + x - 6 = 0 ↔ x = -3 ∨ x = 2 := by
-  sorry
+  constructor
+  -- `x ^ 2 + x - 6 = 0 → x = -3 ∨ x = 2`
+  · intro h
+    have h1 : (x + 3) * (x - 2) = 0 := by
+      calc
+        (x + 3) * (x - 2) = x ^ 2 - 2 * x + 3 * x - 6 := by ring
+                        _ = x ^ 2 + x - 6 := by ring
+                        _ = 0 := by rel [h]
+    have h2 := eq_zero_or_eq_zero_of_mul_eq_zero h1
+    obtain h3 | h4 := h2
+    · left
+      addarith [h3]
+    · right
+      addarith [h4]
+   -- `x = -3 ∨ x = 2 → x ^ 2 + x - 6 = 0`
+  · intro h
+    obtain h1 | h2 := h
+    · rw [h1]
+      ring
+    · rw [h2]
+      ring
 
 example {a : ℤ} : a ^ 2 - 5 * a + 5 ≤ -1 ↔ a = 2 ∨ a = 3 := by
-  sorry
+  constructor
+  -- `a ^ 2 - 5 * a + 5 ≤ -1 → a = 2 ∨ a = 3`
+  · intro h
+    have h1: (2 * a - 5) ^ 2 ≤ 1 ^ 2 := by
+      calc
+        (2 * a - 5) ^ 2 = 4 * (a ^ 2 - 5 * a + 5) + 5 := by ring
+                      _ ≤ 4 * (-1) + 5 := by rel [h]
+                      _ = 1 := by ring
+                      _ = 1 ^ 2 := by ring
+    have h2: -1 ≤ 2 * a - 5 ∧ 2 * a - 5 ≤ 1:= by
+      apply abs_le_of_sq_le_sq'
+      exact h1
+      numbers
+    obtain ⟨h3, h4⟩ := h2
+    have h3': 2 * 2 ≤ 2 * a := by addarith [h3]
+    have h3'': 2 ≤ a := by cancel 2 at h3'
+    have h4': 2 * a ≤ 2 * 3 := by addarith [h4]
+    have h4'': a ≤ 3 := by cancel 2 at h4'
+
+    interval_cases a
+    · left
+      numbers
+    · right
+      numbers
+  -- `a = 2 ∨ a = 3 → a ^ 2 - 5 * a + 5 ≤ -1`
+  · intro h
+    obtain h1 | h2 := h
+    · calc
+      a ^ 2 - 5 * a + 5 = 2 ^ 2 - 5 * 2 + 5 := by rw [h1]
+                      _ = -1 := by ring
+      numbers
+    · calc
+      a ^ 2 - 5 * a + 5 = 3 ^ 2 - 5 * 3 + 5 := by rw [h2]
+                      _ = -1 := by ring
+      numbers
 
 example {n : ℤ} (hn : n ^ 2 - 10 * n + 24 = 0) : Even n := by
   have hn1 :=
@@ -73,7 +139,13 @@ example {n : ℤ} (hn : n ^ 2 - 10 * n + 24 = 0) : Even n := by
     calc (n - 4) * (n - 6) = n ^ 2 - 10 * n + 24 := by ring
       _ = 0 := hn
   rw [mul_eq_zero] at hn1 -- `hn1 : n - 4 = 0 ∨ n - 6 = 0`
-  sorry
+  obtain h4 | h6 := hn1
+  ·
+    use 2
+    addarith [h4]
+  ·
+    use 3
+    addarith [h6]
 
 example {x y : ℤ} (hx : Odd x) (hy : Odd y) : Odd (x + y + 1) := by
   rw [Int.odd_iff_modEq] at *
@@ -93,16 +165,85 @@ example (n : ℤ) : Even n ∨ Odd n := by
 
 
 example {x : ℝ} : 2 * x - 1 = 11 ↔ x = 6 := by
-  sorry
+  constructor
+  · intro h1
+    calc
+      x = (2 * x - 1 + 1) / 2 := by ring
+      _ = (11 + 1) / 2 := by rw [h1]
+      _ = 6 := by ring
+  · intro h2
+    calc
+      2 * x - 1 = 2 * 6 - 1 := by rw [h2]
+            _ = 11 := by ring
 
 example {n : ℤ} : 63 ∣ n ↔ 7 ∣ n ∧ 9 ∣ n := by
-  sorry
+  constructor
+  · intro h1
+    obtain ⟨a, ha⟩ := h1
+    constructor
+    · use 9 * a
+      calc
+        n = 63 * a := by rw [ha]
+          _ = 7 * 9 * a := by ring
+          _ = 7 * (9 * a) := by ring
+    · use 7 * a
+      calc
+        n = 63 * a := by rw [ha]
+          _ = 9 * 7 * a := by ring
+          _ = 9 * (7 * a) := by ring
+  · intro h2
+    obtain ⟨h7, h8⟩ := h2
+    obtain ⟨a, ha⟩ := h7
+    obtain ⟨b, hb⟩ := h8
+    use 4 * a - 5 * b
+    calc
+      n = 36 * n - 35 * n := by ring
+        _ = 36 * (7 * a) - 35 * (9 * b) := by nth_rewrite 1 [ha]; nth_rewrite 1 [hb]; ring
+        _ = 63 * (4 * a - 5 * b) := by ring
+
 
 theorem dvd_iff_modEq {a n : ℤ} : n ∣ a ↔ a ≡ 0 [ZMOD n] := by
-  sorry
+  dsimp [(· ∣ ·), Int.ModEq] at *
+  constructor
+  · intro h1
+    obtain ⟨k, hk⟩ := h1
+    use k
+    addarith [hk]
+  · intro h2
+    obtain ⟨k, hk⟩ := h2
+    use k
+    addarith [hk]
 
 example {a b : ℤ} (hab : a ∣ b) : a ∣ 2 * b ^ 3 - b ^ 2 + 3 * b := by
-  sorry
+  rw [Int.dvd_iff_modEq] at *
+  calc
+    2 * b ^ 3 - b ^ 2 + 3 * b ≡ 2 * 0 ^ 3 - 0 ^ 2 + 3 * 0 [ZMOD a] := by rel [hab]
+                            _ = 0 := by ring
 
 example {k : ℕ} : k ^ 2 ≤ 6 ↔ k = 0 ∨ k = 1 ∨ k = 2 := by
-  sorry
+  constructor
+  · intro h1
+    have h2 : 0 ≤ k := by apply Nat.zero_le
+    have h3 : k ^ 2 < 3 ^ 2 := by
+      calc
+        k ^ 2 ≤ 6 := by apply h1
+          _ < 3 ^ 2 := by numbers
+    rw [Nat.pow_lt_iff_lt_left] at h3
+    interval_cases k
+    · left
+      numbers
+    · right
+      left
+      numbers
+    · right
+      right
+      numbers
+
+  · intro h2
+    obtain h3 | h4 | h5 := h2
+    · rw [h3]
+      numbers
+    · rw [h4]
+      numbers
+    · rw [h5]
+      numbers

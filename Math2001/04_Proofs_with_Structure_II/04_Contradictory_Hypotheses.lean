@@ -65,7 +65,14 @@ example {p : ℕ} (hp : 2 ≤ p) (H : ∀ m : ℕ, 1 < m → m < p → ¬m ∣ p
     left
     addarith [hm]
   -- the case `1 < m`
-  sorry
+  · right
+    have hmp' : m ≤ p := Nat.le_of_dvd hp' hmp
+    obtain hm | hm_right : m = p ∨ m < p := eq_or_lt_of_le hmp'
+    · -- the case `m = p`
+      exact hm
+    · -- the case `m < p`
+      have : ¬m ∣ p := H m hm_left hm_right
+      contradiction
 
 example : Prime 5 := by
   apply prime_test
@@ -90,13 +97,62 @@ example {a b c : ℕ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
 
 example {x y : ℝ} (n : ℕ) (hx : 0 ≤ x) (hn : 0 < n) (h : y ^ n ≤ x ^ n) :
     y ≤ x := by
-  sorry
+  obtain hneg | hpos : y ≤ x ∨ x < y := le_or_lt y x
+  · -- the case `y ≤ x`
+    exact hneg
+  · -- the case `x < y`
+    have h' := pow_lt_pow_of_lt_left hpos hx hn
+    have h'' := not_le_of_lt h'
+    contradiction
 
 example (n : ℤ) (hn : n ^ 2 ≡ 4 [ZMOD 5]) : n ≡ 2 [ZMOD 5] ∨ n ≡ 3 [ZMOD 5] := by
-  sorry
+  mod_cases h : n % 5
+  · -- case 1: `n ≡ 0 [ZMOD 5]`
+    have H :=
+      calc 0 ≡ 0 [ZMOD 5] := by extra
+      _ ≡ 0 ^ 2 [ZMOD 5]:= by numbers
+      _ ≡ n ^ 2 [ZMOD 5] := by rel [h]
+      _ ≡ 4 [ZMOD 5] := hn
+    numbers at H -- contradiction!
+  · -- case 2: `n ≡ 1 [ZMOD 5]`
+    have H :=
+      calc 1 ≡ 1 [ZMOD 5] := by extra
+      _ ≡ 1 ^ 2 [ZMOD 5]:= by numbers
+      _ ≡ n ^ 2 [ZMOD 5] := by rel [h]
+      _ ≡ 4 [ZMOD 5] := hn
+    numbers at H -- contradiction!
+  · -- case 3: `n ≡ 2 [ZMOD 5]`
+    left
+    apply h
+  · -- case 4: `n ≡ 3 [ZMOD 5]`
+    right
+    apply h
+  · -- case 5: `n ≡ 4 [ZMOD 5]`
+    have H :=
+      calc 1 ≡ 1 + 5 * 3 [ZMOD 5] := by extra
+      _ ≡ 16 [ZMOD 5]:= by numbers
+      _ ≡ 4 ^ 2 [ZMOD 5]:= by numbers
+      _ ≡ n ^ 2 [ZMOD 5] := by rel [h]
+      _ ≡ 4 [ZMOD 5] := hn
+    numbers at H -- contradiction!
 
 example : Prime 7 := by
-  sorry
+  apply prime_test
+  · numbers
+  intro m hm_left hm_right
+  apply Nat.not_dvd_of_exists_lt_and_lt
+  interval_cases m
+  · use 3
+    constructor <;> numbers
+  · use 2
+    constructor <;> numbers
+  · use 1
+    constructor <;> numbers
+  · use 1
+    constructor <;> numbers
+  · use 1
+    constructor <;> numbers
+
 
 example {x : ℚ} (h1 : x ^ 2 = 4) (h2 : 1 < x) : x = 2 := by
   have h3 :=
@@ -109,4 +165,34 @@ example {x : ℚ} (h1 : x ^ 2 = 4) (h2 : 1 < x) : x = 2 := by
 namespace Nat
 
 example (p : ℕ) (h : Prime p) : p = 2 ∨ Odd p := by
-  sorry
+  dsimp [Prime] at h
+  obtain ⟨h2, h3⟩ := h
+  have h' := Nat.eq_or_lt_of_le h2
+  obtain h4 | h5 := h'
+  left -- the case `p = 2`
+  · addarith [h4]
+  right -- the case `Odd p`
+  obtain h6 | h7 := Nat.even_or_odd p
+  · -- the case `Even p`
+    obtain ⟨k, hk⟩ := h6
+    have h8  : k ∣ p :=  by rw [hk]; apply dvd_mul_left
+    have h9 : 2 * k > 2 * 1 := by
+      calc
+        2 * k = p := by rw [hk]
+           _ > 2 := by rel [h5]
+           _ = 2 * 1 := by ring
+    cancel 2 at h9
+    have h10: p > k := by
+      calc
+        p = 2 * k := by rw [hk]
+        _ = k + k := by ring
+        _ > k + 1 := by rel [h9]
+        _ > k := by extra
+
+    have h11 := ne_of_gt h9
+    have h12 := ne_of_gt h10
+    obtain h13 | h14 := h3 k h8
+    contradiction
+
+  · -- the case `Odd p`
+    exact h7
