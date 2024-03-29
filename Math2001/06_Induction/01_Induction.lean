@@ -22,14 +22,38 @@ example (n : ℕ) : 2 ^ n ≥ n + 1 := by
 example (n : ℕ) : Even n ∨ Odd n := by
   simple_induction n with k IH
   · -- base case
-    sorry
+    left
+    dsimp [Even]
+    use 0
+    numbers
   · -- inductive step
     obtain ⟨x, hx⟩ | ⟨x, hx⟩ := IH
-    · sorry
-    · sorry
+    · right
+      dsimp [Odd]
+      use x
+      rw [hx]
+    · left
+      dsimp [Even]
+      use x + 1
+      rw [hx]
+      ring
 
 example {a b d : ℤ} (h : a ≡ b [ZMOD d]) (n : ℕ) : a ^ n ≡ b ^ n [ZMOD d] := by
-  sorry
+  simple_induction n with k IH
+  · -- base case
+    calc
+   a ^ 0  = 1 := by ring
+    _ ≡ 1 [ZMOD d] := by extra
+    _ = b ^ 0 := by ring
+  · -- inductive step
+    obtain ⟨x, hx⟩ := IH
+    dsimp [Int.ModEq] at *
+    obtain ⟨y, hy⟩ := h
+    use a * x + b ^ k * y
+    calc
+    a ^ (k + 1) - b ^ (k + 1) = a * (a ^ k - b ^ k) + b ^ k * (a - b) := by ring
+                           _ = a * (d * x) + b ^ k * (d * y) := by rw [hx, hy]
+                           _ = d * (a * x + b ^ k * y) := by ring
 
 example (n : ℕ) : 4 ^ n ≡ 1 [ZMOD 15] ∨ 4 ^ n ≡ 4 [ZMOD 15] := by
   simple_induction n with k IH
