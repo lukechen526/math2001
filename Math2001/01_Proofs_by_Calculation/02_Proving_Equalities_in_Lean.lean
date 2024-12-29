@@ -42,10 +42,11 @@ example {a b m n : ℤ} (h1 : a * m + b * n = 1) (h2 : b ^ 2 = 2 * a ^ 2) :
 -- Exercise: type out the whole proof printed in the text as a Lean proof.
 example {a b c d e f : ℤ} (h1 : a * d = b * c) (h2 : c * f = d * e) :
     d * (a * f - b * e) = 0 :=
-
-  calc
-    d * (a * f - b * e) = d * a * f - d * b * e := by ring
-                      _ = a * d * f - b * d * e := by ring
-                      _ = b * (c * f) - b * d * e := by rw [h1]; ring
-                      _ = b * d * e - b * d * e := by rw [h2]; ring
-                      _ = 0 := by ring
+    calc
+        d * (a * f - b * e) = d * (a * f) - d * (b * e) := by ring
+        _ = (d * a) * f - (d * b) * e := by ring
+        _ = (a * d) * f - (b * d) * e := by ring
+        _ = (b * c) * f - (b * d) * e := by rw [h1]
+        _ = b * (c * f) - b * (d * e) := by ring
+        _ = b * (d * e) - b * (d * e) := by rw [h2]
+        _ = 0 := by ring
