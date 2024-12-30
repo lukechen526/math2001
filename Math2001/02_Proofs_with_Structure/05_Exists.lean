@@ -144,8 +144,53 @@ example {m : ℤ} (h : ∃ a, 2 * a = m) : m ≠ 5 := by
       _ = 6 := by ring
       _ > 5 := by numbers
 
+
 example {n : ℤ} : ∃ a, 2 * a ^ 3 ≥ n * a + 7 := by
-  sorry
+  -- Choose `a = n^2 + 2` as the candidate
+  use n ^ 2 + 2
+
+  -- Prove that `n^2 ≥ n` for all integers `n`
+  have h1 : n ^ 2 ≥ n
+  have h := le_or_succ_le n 0
+  obtain hn | hn := h
+  · -- Case 1: `n ≤ 0`
+    calc
+    n ^ 2 = n ^ 2 + 0 := by ring
+    _ ≥ 0 := by extra
+    _ ≥ n := by rel [hn]
+  · -- Case 2: `n ≥ 1`
+    calc
+      n ^ 2 = n * n := by ring
+      _ ≥ n * 1 := by rel [hn]
+      _ = n := by ring
+
+  -- Prove that `n^4 ≥ n^3` for all integers `n`
+  have h2 : n ^ 4 ≥ n ^ 3
+  have h := le_or_succ_le n 0
+  obtain hn | hn := h
+  · -- Case 1: `n ≤ 0`
+    calc
+      n ^ 4 = n ^ 2 * n ^ 2 := by ring
+      _ ≥ n ^ 2 * n := by rel [h1]
+      _ = n ^ 3 := by ring
+  · -- Case 2: `n ≥ 1`
+    calc
+      n ^ 4 = n ^ 3 * n := by ring
+      _ ≥ n ^ 3 * 1 := by rel [hn]
+      _ = n ^ 3 := by ring
+
+  -- Main calculation to show `2 * a^3 ≥ n * a + 7`
+  calc
+    2 * (n ^ 2 + 2) ^ 3 = 2 * (n ^ 2 + 2) * (n ^ 2 + 2) ^ 2 := by ring
+    _ = 2 * (n ^ 2 + 2) * (n ^ 4 + 4 * n ^ 2 + 4) := by ring
+    _ = 2 * n ^ 2 * (n ^ 4 + 4 * n ^ 2 + 4) + 4 * (n ^ 4 + 4 * n ^ 2 + 4) := by ring
+    _ ≥ 4 * (n ^ 4 + 4 * n ^ 2 + 4) := by extra
+    _ = 4 * n ^ 4 + 16 * n ^ 2 + 16 := by ring
+    _ = (3 * n ^ 4 + 14 * n ^ 2 + 9) + (n ^ 4 + 2 * n ^ 2 + 7) := by ring
+    _ ≥ n ^ 4 + 2 * n ^ 2 + 7 := by extra
+    _ ≥ n ^ 3 + 2 * n ^ 2 + 7 := by rel [h2]
+    _ ≥ n ^ 3 + 2 * n + 7 := by rel [h1]
+    _ = n * (n ^ 2 + 2) + 7 := by ring
 
 example {a b c : ℝ} (ha : a ≤ b + c) (hb : b ≤ a + c) (hc : c ≤ a + b) :
     ∃ x y z, x ≥ 0 ∧ y ≥ 0 ∧ z ≥ 0 ∧ a = y + z ∧ b = x + z ∧ c = x + y := by
