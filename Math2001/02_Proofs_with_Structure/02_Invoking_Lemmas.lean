@@ -44,6 +44,6 @@ example {s : ℚ} (h1 : 3 * s ≤ -6) (h2 : 2 * s ≥ -4) : s = -2 := by
     _ = -2 := by ring
 
   calc
-    s ≥ 2 * s / 2 := by ring
+    s = 2 * s / 2 := by ring
     _ ≥ -4 / 2 := by rel [h2]
     _ = -2 := by ring
