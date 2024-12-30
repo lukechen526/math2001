@@ -44,14 +44,12 @@ example {x : ℝ} (hx : x ^ 2 - 3 * x + 2 = 0) : x = 1 ∨ x = 2 := by
     _ = 0 := by rw [hx]
   have h2 := eq_zero_or_eq_zero_of_mul_eq_zero h1
   obtain h3 | h4 := h2
+
   left
-  calc
-    x = (x - 1) + 1 := by ring
-    _ = 1 := by addarith [h3]
+  addarith [h3]
 
   right
-  calc
-    x = 2 := by addarith [h4]
+  addarith [h4]
 
 example {n : ℤ} : n ^ 2 ≠ 2 := by
   have hn0 := le_or_succ_le n 0
