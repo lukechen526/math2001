@@ -67,12 +67,12 @@ theorem Int.ModEq.pow_two (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := b
 
 theorem Int.ModEq.pow_three (h : a ≡ b [ZMOD n]) : a ^ 3 ≡ b ^ 3 [ZMOD n] := by
   dsimp [Int.ModEq] at *
-  obtain ⟨x, hx⟩ := h
-  use x * (a ^ 2 + a * b + b ^ 2)
+  obtain ⟨k, hk⟩ := h
+  use k * (a ^ 2 + a * b + b ^ 2)
   calc
     a ^ 3 - b ^ 3 = (a - b) * (a ^ 2 + a * b + b ^ 2) := by ring
-    _ = n * x * (a ^ 2 + a * b + b ^ 2) := by rw [hx]
-    _ = n * (x * (a ^ 2 + a * b + b ^ 2)) := by ring
+    _ = n * k * (a ^ 2 + a * b + b ^ 2) := by rw [hk]
+    _ = n * (k * (a ^ 2 + a * b + b ^ 2)) := by ring
 
 theorem Int.ModEq.pow (k : ℕ) (h : a ≡ b [ZMOD n]) : a ^ k ≡ b ^ k [ZMOD n] :=
   sorry -- we'll prove this later in the book
@@ -114,7 +114,8 @@ example {a b : ℤ} (ha : a ≡ 2 [ZMOD 4]) :
 
 
 example : 34 ≡ 104 [ZMOD 5] := by
-  sorry
+  use -14
+  numbers
 
 theorem Int.ModEq.symm (h : a ≡ b [ZMOD n]) : b ≡ a [ZMOD n] := by
   obtain ⟨x, hx⟩ := h
@@ -135,22 +136,30 @@ theorem Int.ModEq.trans (h1 : a ≡ b [ZMOD n]) (h2 : b ≡ c [ZMOD n]) :
     _ = n * (x + y) := by ring
 
 example : a + n * c ≡ a [ZMOD n] := by
-  sorry
-
+  use c
+  ring
 
 example {a b : ℤ} (h : a ≡ b [ZMOD 5]) : 2 * a + 3 ≡ 2 * b + 3 [ZMOD 5] := by
-  sorry
-
-example {m n : ℤ} (h : m ≡ n [ZMOD 4]) : 3 * m - 1 ≡ 3 * n - 1 [ZMOD 4] := by
-  sorry
-
-example {k : ℤ} (hb : k ≡ 3 [ZMOD 5]) :
-    4 * k + k ^ 3 + 3 ≡ 4 * 3 + 3 ^ 3 + 3 [ZMOD 5] := by
-  apply Int.ModEq.add
   apply Int.ModEq.add
   apply Int.ModEq.mul
   apply Int.ModEq.refl
-  apply hb
-  apply Int.ModEq.pow_three
-  apply hb
+  apply h
   apply Int.ModEq.refl
+
+example {m n : ℤ} (h : m ≡ n [ZMOD 4]) : 3 * m - 1 ≡ 3 * n - 1 [ZMOD 4] := by
+  apply Int.ModEq.sub
+  apply Int.ModEq.mul
+  apply Int.ModEq.refl
+  apply h
+  apply Int.ModEq.refl
+
+example {k : ℤ} (hb : k ≡ 3 [ZMOD 5]) :
+    4 * k + k ^ 3 + 3 ≡ 4 * 3 + 3 ^ 3 + 3 [ZMOD 5] := by
+    apply Int.ModEq.add
+    apply Int.ModEq.add
+    apply Int.ModEq.mul
+    apply Int.ModEq.refl
+    apply hb
+    apply Int.ModEq.pow
+    apply hb
+    apply Int.ModEq.refl
