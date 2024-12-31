@@ -117,10 +117,22 @@ example {x : ℤ} (hx : Odd x) : Odd (x ^ 3) := by
   sorry
 
 example {n : ℤ} (hn : Odd n) : Even (n ^ 2 - 3 * n + 2) := by
-  sorry
+  obtain ⟨k, hk⟩ := hn
+  use 2 * k ^ 2 - k
+  calc
+    n ^ 2 - 3 * n + 2 = (2 * k + 1) ^ 2 - 3 * (2 * k + 1) + 2 := by rw [hk]
+    _ = 4 * k ^ 2 + 4 * k + 1 - 6 * k - 3 + 2 := by ring
+    _ = 4 * k ^ 2 - 2 * k := by ring
+    _ = 2 * (2 * k ^ 2 - k) := by ring
 
 example {a : ℤ} (ha : Odd a) : Odd (a ^ 2 + 2 * a - 4) := by
-  sorry
+  obtain ⟨k, hk⟩ := ha
+  use 2 * k ^ 2 + 4 * k - 1
+  calc
+   a ^ 2 + 2 * a - 4 = (2 * k + 1) ^ 2 + 2 * (2 * k + 1) - 4 := by rw [hk]
+    _ = 4 * k ^ 2 + 4 * k + 1 + 4 * k + 2 - 4 := by ring
+    _ = 4 * k ^ 2 + 8 * k - 1 := by ring
+    _ = 2 * (2 * k ^ 2 + 4 * k - 1) + 1 := by ring
 
 example {p : ℤ} (hp : Odd p) : Odd (p ^ 2 + 3 * p - 5) := by
   sorry
@@ -129,7 +141,21 @@ example {x y : ℤ} (hx : Odd x) (hy : Odd y) : Odd (x * y) := by
   sorry
 
 example (n : ℤ) : Odd (3 * n ^ 2 + 3 * n - 1) := by
-  sorry
+  obtain hn | hn := Int.even_or_odd n
+  obtain ⟨k, hk⟩ := hn
+  use 6 * k ^ 2 + 3 * k - 1
+  calc
+    3 * n ^ 2 + 3 * n - 1 = 3 * (2 * k) ^ 2 + 3 * (2 * k) - 1 := by rw [hk]
+    _ = 12 * k ^ 2 + 6 * k - 1 := by ring
+    _ = 2 * (6 * k ^ 2 + 3 * k - 1) + 1 := by ring
+
+  obtain ⟨k, hk⟩ := hn
+  use 6 * k ^ 2 + 9 * k + 2
+  calc
+    3 * n ^ 2 + 3 * n - 1 = 3 * (2 * k + 1) ^ 2 + 3 * (2 * k + 1) - 1 := by rw [hk]
+    _ = 12 * k ^ 2 + 18 * k + 5 := by ring
+    _ = 2 * (6 * k ^ 2 + 9 * k + 2) + 1 := by ring
+
 
 example (n : ℤ) : ∃ m ≥ n, Odd m := by
   dsimp [Odd] at *
