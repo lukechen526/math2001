@@ -163,10 +163,14 @@ example : Prime 79 := by
     constructor <;> numbers
   · use 19
     constructor <;> numbers
-  · sorry
-  · sorry
-  · sorry
-  · sorry
+  · use 15
+    constructor <;> numbers
+  · use 13
+    constructor <;> numbers
+  · use 11
+    constructor <;> numbers
+  · use 9
+    constructor <;> numbers
 
 /-! # Exercises -/
 
