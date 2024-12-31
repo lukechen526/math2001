@@ -138,14 +138,26 @@ example {p : ℕ} (hp : 2 ≤ p)  (T : ℕ) (hTp : p < T ^ 2)
   intro h_div
   obtain ⟨l, hl⟩ := h_div
   have : l ∣ p
-  · sorry
+  · use m
+    rw [mul_comm, hl]
   have hl1 :=
     calc m * 1 = m := by ring
       _ < p := hmp
       _ = m * l := hl
   cancel m at hl1
   have hl2 : l < T
-  · sorry
+  ·
+    have h' := Nat.lt_or_ge l T
+    obtain h | h := h'
+    · exact h
+    · have h'' :=
+       calc p = m * l := hl
+            _ ≥ T * T := by rel [h, hmT]
+            _ = T ^ 2 := by ring
+
+      have h''' := not_lt_of_ge h''
+      contradiction
+
   have : ¬ l ∣ p := H l hl1 hl2
   contradiction
 
