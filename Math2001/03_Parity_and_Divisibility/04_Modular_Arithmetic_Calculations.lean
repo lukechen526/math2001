@@ -63,13 +63,36 @@ example (a b : ℤ) : (a + b) ^ 3 ≡ a ^ 3 + b ^ 3 [ZMOD 3] := by
                 _ ≡ a ^ 3 + b ^ 3 [ZMOD 3] := by extra
 
 example : ∃ a : ℤ, 4 * a ≡ 1 [ZMOD 7] := by
-  sorry
+  use 2
+  calc
+    (4: ℤ) * 2 = 8 := by numbers
+    _ = 1+ 7 * 1 := by numbers
+    _ ≡ 1 [ZMOD 7] := by extra
 
 example : ∃ k : ℤ, 5 * k ≡ 6 [ZMOD 8] := by
-  sorry
+  use 6
+  calc
+    (5: ℤ) * 6 = 30 := by numbers
+    _ = 6 + 8 * 3 := by numbers
+    _ ≡ 6 [ZMOD 8] := by extra
 
 example (n : ℤ) : 5 * n ^ 2 + 3 * n + 7 ≡ 1 [ZMOD 2] := by
-  sorry
+  -- Use `mod_cases` to consider the two possible cases for `n % 2`: 0 or 1.
+  mod_cases hn: n % 2
+
+  -- Case 1: When `n % 2 = 0`
+  calc
+    5 * n ^ 2 + 3 * n + 7 ≡ 5 * 0 ^ 2 + 3 * 0 + 7 [ZMOD 2] := by rel [hn]  -- Substitute `n ≡ 0 [ZMOD 2]`
+    _ = 7 := by numbers  -- Simplify the expression
+    _ = 1 + 2 * 3 := by numbers  -- Rewrite 7 as 1 + 2 * 3
+    _ ≡ 1 [ZMOD 2] := by extra  -- Conclude that 7 ≡ 1 [ZMOD 2]
+
+  -- Case 2: When `n % 2 = 1`
+  calc
+    5 * n ^ 2 + 3 * n + 7 ≡ 5 * 1 ^ 2 + 3 * 1 + 7 [ZMOD 2] := by rel [hn]  -- Substitute `n ≡ 1 [ZMOD 2]`
+    _ = 15 := by numbers  -- Simplify the expression
+    _ = 1 + 2 * 7 := by numbers  -- Rewrite 15 as 1 + 2 * 7
+    _ ≡ 1 [ZMOD 2] := by extra  -- Conclude that 15 ≡ 1 [ZMOD 2]
 
 example {x : ℤ} : x ^ 5 ≡ x [ZMOD 5] := by
   mod_cases hx : x % 5
