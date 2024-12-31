@@ -55,17 +55,17 @@ theorem even_iff_modEq (n : ℤ) : Even n ↔ n ≡ 0 [ZMOD 2] := by
   constructor
   · intro h
     obtain ⟨k, hk⟩ := h
-    dsimp [Int.ModEq]
-    dsimp [(· ∣ ·)]
-    use k
-    addarith [hk]
+    calc
+      n = 2 * k := by rw [hk]
+      _ = 0 + 2 * k := by ring
+      _ ≡ 0 [ZMOD 2] := by extra
   · intro h
+    dsimp [Even]
     dsimp [Int.ModEq] at h
     dsimp [(· ∣ ·)] at h
-    obtain ⟨k, hk⟩ := h
-    dsimp [Int.Even]
-    use k
-    addarith [hk]
+    obtain ⟨a, ha⟩ := h
+    use a
+    addarith [ha]
 
 example {x : ℝ} : x ^ 2 + x - 6 = 0 ↔ x = -3 ∨ x = 2 := by
   constructor
@@ -132,7 +132,11 @@ example {n : ℤ} (hn : n ^ 2 - 10 * n + 24 = 0) : Even n := by
     calc (n - 4) * (n - 6) = n ^ 2 - 10 * n + 24 := by ring
       _ = 0 := hn
   have hn2 := eq_zero_or_eq_zero_of_mul_eq_zero hn1
-  sorry
+  obtain hn | hn := hn2
+  · use 2
+    addarith [hn]
+  · use 3
+    addarith [hn]
 
 example {n : ℤ} (hn : n ^ 2 - 10 * n + 24 = 0) : Even n := by
   have hn1 :=
@@ -159,7 +163,9 @@ example (n : ℤ) : Even n ∨ Odd n := by
   · left
     rw [Int.even_iff_modEq]
     apply hn
-  · sorry
+  · right
+    rw [Int.odd_iff_modEq]
+    apply hn
 
 /-! # Exercises -/
 
@@ -223,22 +229,22 @@ example {a b : ℤ} (hab : a ∣ b) : a ∣ 2 * b ^ 3 - b ^ 2 + 3 * b := by
 example {k : ℕ} : k ^ 2 ≤ 6 ↔ k = 0 ∨ k = 1 ∨ k = 2 := by
   constructor
   · intro h1
-    have h2 : 0 ≤ k := by apply Nat.zero_le
-    have h3 : k ^ 2 < 3 ^ 2 := by
-      calc
-        k ^ 2 ≤ 6 := by apply h1
-          _ < 3 ^ 2 := by numbers
-    rw [Nat.pow_lt_iff_lt_left] at h3
+    -- Prove that k ^ 2 < 9 implies k < 3
+    have h2 : k < 3
+    · apply lt_of_pow_lt_pow 2
+      · numbers
+      · calc
+          k ^ 2 ≤ 6 := h1
+          _ < 9 := by numbers
     interval_cases k
     · left
-      numbers
+      rfl
     · right
       left
-      numbers
+      rfl
     · right
       right
-      numbers
-
+      rfl
   · intro h2
     obtain h3 | h4 | h5 := h2
     · rw [h3]
