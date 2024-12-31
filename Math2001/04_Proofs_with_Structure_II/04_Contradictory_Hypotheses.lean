@@ -81,6 +81,7 @@ example : Prime 5 := by
   apply Nat.not_dvd_of_exists_lt_and_lt
   interval_cases m
   · use 2
+    -- <;> connects two tactics, performing the second one on every goal created by the first one.
     constructor <;> numbers
   · use 1
     constructor <;> numbers
@@ -90,7 +91,16 @@ example : Prime 5 := by
 
 example {a b c : ℕ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     (h_pyth : a ^ 2 + b ^ 2 = c ^ 2) : 3 ≤ a := by
-  sorry
+    have hn :=  le_or_succ_le a 2
+    obtain h_le | h_succ_le := hn
+    -- the case a ≤  2
+    · have hn1 :=  le_or_succ_le b 1
+
+
+    -- the case 3 ≤ a
+    . exact h_succ_le
+
+
 
 /-! # Exercises -/
 
