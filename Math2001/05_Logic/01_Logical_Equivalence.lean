@@ -210,14 +210,11 @@ example (P : α → β → Prop) : (∃ x y, P x y) ↔ ∃ y x, P x y := by
 
 example (P : α → β → Prop) : (∀ x y, P x y) ↔ ∀ y x, P x y := by
   constructor
-  · intro h
-    intro y
-    intro x
-    apply h
-  · intro h
-    intro x
-    intro y
-    apply h
+  · intro h y x
+    apply h x y
+  · intro h x y
+    apply h y x
+
 
 example (P : α → Prop) (Q : Prop) : ((∃ x, P x) ∧ Q) ↔ ∃ x, (P x ∧ Q) := by
   constructor
