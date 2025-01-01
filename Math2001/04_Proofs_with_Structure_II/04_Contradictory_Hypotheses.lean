@@ -170,39 +170,55 @@ example {x : ℚ} (h1 : x ^ 2 = 4) (h2 : 1 < x) : x = 2 := by
       (x + 2) * (x - 2) = x ^ 2 + 2 * x - 2 * x - 4 := by ring
       _ = 0 := by addarith [h1]
   rw [mul_eq_zero] at h3
-  sorry
+  obtain hn | hn := h3
+  · -- case `x + 2 = 0`
+    have :=
+      calc
+        -2 = 0 - 2 := by ring
+        _ = x := by addarith [hn]
+        _ > 1 := by addarith [h2]
+
+    numbers at this
+  · addarith [hn]
 
 namespace Nat
 
 example (p : ℕ) (h : Prime p) : p = 2 ∨ Odd p := by
+  -- Unfold the definition of `Prime` to access its components
   dsimp [Prime] at h
+  -- Extract the two parts of the `Prime` definition:
+  -- `h2` states that `2 ≤ p`, and `h3` states that `p` has no divisors other than 1 and itself.
   obtain ⟨h2, h3⟩ := h
-  have h' := Nat.eq_or_lt_of_le h2
-  obtain h4 | h5 := h'
-  left -- the case `p = 2`
-  · addarith [h4]
-  right -- the case `Odd p`
-  obtain h6 | h7 := Nat.even_or_odd p
-  · -- the case `Even p`
-    obtain ⟨k, hk⟩ := h6
-    have h8  : k ∣ p :=  by rw [hk]; apply dvd_mul_left
-    have h9 : 2 * k > 2 * 1 := by
-      calc
-        2 * k = p := by rw [hk]
-           _ > 2 := by rel [h5]
-           _ = 2 * 1 := by ring
-    cancel 2 at h9
-    have h10: p > k := by
-      calc
-        p = 2 * k := by rw [hk]
-        _ = k + k := by ring
-        _ > k + 1 := by rel [h9]
-        _ > k := by extra
 
-    have h11 := ne_of_gt h9
-    have h12 := ne_of_gt h10
-    obtain h13 | h14 := h3 k h8
-    contradiction
+  -- Consider whether `p = 2` or `p > 2`
+  obtain h4 | h5 := Nat.eq_or_lt_of_le h2
 
-  · -- the case `Odd p`
-    exact h7
+  · -- Case 1: `p = 2`
+    left
+    addarith [h4]
+  · -- Case 2: `p > 2`
+    -- consider whether `p` is even or odd
+    have h6 := Nat.even_or_odd p
+    obtain h7 | h8 := h6
+    · -- Case 2a: `p` is even
+      -- Since `p` is even, we can write `p` as `2 * k` for some natural number `k`
+      rw [Even] at h7
+      obtain ⟨k, hk⟩ := h7
+      -- Show that `2` divides `p` using the fact that `p = 2 * k`
+      have h9 : 2 ∣ p :=
+        by use k; rw [hk]
+      -- Since `p` is prime and `2` divides `p`, by the definition of `Prime`, `2` must be either `1` or `p`
+      obtain h10 | h11 := h3 2 h9
+      · -- Subcase 2a1: `2 = 1`
+        -- This is a contradiction since `2` is not equal to `1`
+        numbers at h10
+      · -- Subcase 2a2: `2 = p`
+        -- This implies `p = 2`, but we are in the case where `p > 2`, leading to a contradiction
+        have :=
+        calc 2 = p := h11
+         _ > 2 := h5
+        numbers at this
+    · -- Case 2b: `p` is odd
+      -- Since `p` is odd, we can directly conclude that `p` is odd by using the hypothesis `h8`
+      right
+      exact h8
