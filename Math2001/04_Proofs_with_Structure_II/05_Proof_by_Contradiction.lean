@@ -126,7 +126,15 @@ example (a b : ℤ) (h : ∃ q, b * q < a ∧ a < b * (q + 1)) : ¬b ∣ a := by
     calc b * k = a := by rw [hk]
       _ < b * (q + 1) := hq₂
   cancel b at h1
-  sorry
+  have h2 :=
+    calc
+      b * q < a := hq₁
+      _ = b * k := by rw [hk]
+  cancel b at h2
+  rw [Int.lt_iff_add_one_le] at h2
+  rw [← Int.not_lt] at h2
+  contradiction
+
 
 example {p : ℕ} (hp : 2 ≤ p)  (T : ℕ) (hTp : p < T ^ 2)
     (H : ∀ (m : ℕ), 1 < m → m < T → ¬ (m ∣ p)) :
