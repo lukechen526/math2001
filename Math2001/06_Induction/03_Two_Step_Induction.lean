@@ -176,7 +176,14 @@ def t : ℕ → ℤ
   | n + 2 => 2 * t (n + 1) - t n
 
 example (n : ℕ) : t n = 2 * n + 5 := by
-  sorry
+  two_step_induction n with k IH1 IH2
+  · calc t 0 = 5 := by rw [t]
+      _ = 2 * 0 + 5 := by numbers
+  · calc t 1 = 7 := by rw [t]
+      _ = 2 * 1 + 5 := by numbers
+  · calc t (k + 2) = 2 * t (k + 1) - t k := by rw [t]
+      _ = 2 * (2 * (k + 1) + 5) - (2 * k + 5) := by rw [IH1, IH2]
+      _ = 2 * (k + 2) + 5 := by ring
 
 def q : ℕ → ℤ
   | 0 => 1
@@ -184,7 +191,14 @@ def q : ℕ → ℤ
   | n + 2 => 2 * q (n + 1) - q n + 6 * n + 6
 
 example (n : ℕ) : q n = (n:ℤ) ^ 3 + 1 := by
-  sorry
+  two_step_induction n with k IH1 IH2
+  · calc q 0 = 1 := by rw [q]
+     _ = 0 ^ 3 + 1 := by numbers
+  · calc q 1 = 2 := by rw [q]
+      _ = 1 ^ 3 + 1 := by numbers
+  · calc q (k + 2) = 2 * q (k + 1) - q k + 6 * k + 6 := by rw [q]
+    _ = 2 * ((k + 1) ^ 3 + 1) - (k ^ 3 + 1) + 6 * k + 6 := by rw [IH1, IH2]
+    _ = (k + 2) ^ 3 + 1 := by ring
 
 def s : ℕ → ℤ
   | 0 => 2
@@ -192,7 +206,46 @@ def s : ℕ → ℤ
   | n + 2 => 2 * s (n + 1) + 3 * s n
 
 example (m : ℕ) : s m ≡ 2 [ZMOD 5] ∨ s m ≡ 3 [ZMOD 5] := by
-  sorry
+
+  -- We will prove a more precise version of this
+  have H: ∀ n: ℕ, (s n ≡ 2 [ZMOD 5] ∧ s (n + 1) ≡ 3 [ZMOD 5]) ∨ (s n ≡ 3 [ZMOD 5] ∧ s (n + 1) ≡ 2 [ZMOD 5]) := by
+   intro n
+   simple_induction n with k IH
+   · left
+     constructor
+     · calc
+        s 0 = 2 := by rw [s]
+          _ ≡ 2 [ZMOD 5] := by numbers
+     · calc
+        s (0 + 1) = s 1 := by ring
+              _ = 3 := by rw [s]
+              _ ≡ 3 [ZMOD 5] := by numbers
+   · obtain ⟨IH1, IH2⟩ | ⟨IH1, IH2⟩ := IH
+     · right
+       constructor
+       · exact IH2
+       · calc
+         s (k + 1 + 1) = 2 * s (k + 1) + 3 * s k := by rw [s]
+                     _ ≡ 2 * 3 + 3 * 2 [ZMOD 5] := by rel [IH1, IH2]
+                     _ = 12 := by numbers
+                     _ ≡ 2 + 2 * 5 [ZMOD 5] := by numbers
+                     _ ≡ 2 [ZMOD 5] := by extra
+     · left
+       constructor
+       · exact IH2
+       · calc
+         s (k + 1 + 1) = 2 * s (k + 1) + 3 * s k := by rw [s]
+                     _ ≡ 2 * 2 + 3 * 3 [ZMOD 5] := by rel [IH1, IH2]
+                     _ = 13 := by numbers
+                     _ ≡ 3 + 2 * 5 [ZMOD 5] := by numbers
+                     _ ≡ 3 [ZMOD 5] := by extra
+
+  -- Now we can use this to prove the original statement
+  obtain ⟨H1, H2⟩ | ⟨H1, H2⟩ := H m
+  · left
+    exact H1
+  · right
+    exact H1
 
 def p : ℕ → ℤ
   | 0 => 2
