@@ -31,9 +31,9 @@ example (P Q : Prop) : ¬ (P ∧ Q) ↔ (¬ P ∨ ¬ Q) := by
 example :
     ¬(∀ m : ℤ, m ≠ 2 → ∃ n : ℤ, n ^ 2 = m) ↔ ∃ m : ℤ, m ≠ 2 ∧ ∀ n : ℤ, n ^ 2 ≠ m :=
   calc ¬(∀ m : ℤ, m ≠ 2 → ∃ n : ℤ, n ^ 2 = m)
-      ↔ ∃ m : ℤ, ¬(m ≠ 2 → ∃ n : ℤ, n ^ 2 = m) := by rel [not_forall]
-    _ ↔ ∃ m : ℤ, m ≠ 2 ∧ ¬(∃ n : ℤ, n ^ 2 = m) := by rel [not_imp]
-    _ ↔ ∃ m : ℤ, m ≠ 2 ∧ ∀ n : ℤ, n ^ 2 ≠ m := by rel [not_exists]
+   ↔ ∃ m : ℤ, ¬(m ≠ 2 → ∃ n : ℤ, n ^ 2 = m) := by rel [not_forall]
+   _ ↔ ∃ m : ℤ, m ≠ 2 ∧ ¬(∃ n : ℤ, n ^ 2 = m) := by rel [not_imp]
+   _ ↔ ∃ m : ℤ, m ≠ 2 ∧ ∀ n : ℤ, n ^ 2 ≠ m := by rel [not_exists]
 
 
 example : ¬(∀ n : ℤ, ∃ m : ℤ, n ^ 2 < m ∧ m < (n + 1) ^ 2)
@@ -140,11 +140,19 @@ example : (¬ ∀ a b : ℤ, a * b = 1 → a = 1 ∨ b = 1)
     ↔ ∃ a b : ℤ, a * b = 1 ∧ a ≠ 1 ∧ b ≠ 1 :=
     sorry
 
-example : (¬ ∃ x : ℝ, ∀ y : ℝ, y ≤ x) ↔ (∀ x : ℝ, ∃ y : ℝ, y > x) :=
-  sorry
+example : (¬ ∃ x : ℝ, ∀ y : ℝ, y ≤ x) ↔ (∀ x : ℝ, ∃ y : ℝ, y > x) := by
+  constructor
+  · push_neg
+    intro h x
+    apply h
+  · push_neg
+    intro h x
+    apply h
 
 example : ¬ (∃ m : ℤ, ∀ n : ℤ, m = n + 5) ↔ ∀ m : ℤ, ∃ n : ℤ, m ≠ n + 5 :=
-  sorry
+  calc
+    ¬ (∃ m : ℤ, ∀ n : ℤ, m = n + 5) ↔ ∀ m : ℤ, ¬ ∀ n : ℤ, m = n + 5 := by rel [not_exists]
+    _ ↔ ∀ m : ℤ, ∃ n : ℤ, ¬ (m = n + 5) := by rel [not_forall]
 
 #push_neg ¬(∀ n : ℕ, n > 0 → ∃ k l : ℕ, k < n ∧ l < n ∧ k ≠ l)
 #push_neg ¬(∀ m : ℤ, m ≠ 2 → ∃ n : ℤ, n ^ 2 = m)
@@ -172,12 +180,27 @@ example : ¬ (∃ t : ℝ, t ≤ 4 ∧ t ≥ 5) := by
 example : ¬ Int.Even 7 := by
   dsimp [Int.Even]
   push_neg
-  sorry
+  intro k
+  obtain hn | hn := le_or_succ_le k 3
+  · apply ne_of_gt
+    calc
+      2 * k ≤ 2 * 3 := by rel [hn]
+      _ < 7 := by numbers
+  · apply ne_of_lt
+    calc
+      7 < 2 * 4 := by numbers
+      _ ≤ 2 * k := by rel [hn]
 
 example {p : ℕ} (k : ℕ) (hk1 : k ≠ 1) (hkp : k ≠ p) (hk : k ∣ p) : ¬ Prime p := by
   dsimp [Prime]
   push_neg
-  sorry
+  right
+  use k
+  constructor
+  · apply hk
+  · constructor
+    · apply hk1
+    · apply hkp
 
 example : ¬ ∃ a : ℤ, ∀ n : ℤ, 2 * a ^ 3 ≥ n * a + 7 := by
   push_neg
@@ -190,5 +213,7 @@ example : ¬ ∃ a : ℤ, ∀ n : ℤ, 2 * a ^ 3 ≥ n * a + 7 := by
 example {p : ℕ} (hp : ¬ Prime p) (hp2 : 2 ≤ p) : ∃ m, 2 ≤ m ∧ m < p ∧ m ∣ p := by
   have H : ¬ (∀ (m : ℕ), 2 ≤ m → m < p → ¬m ∣ p)
   · intro H
-    sorry
-  sorry
+    have := prime_test hp2 H
+    contradiction
+  push_neg at H
+  exact H
