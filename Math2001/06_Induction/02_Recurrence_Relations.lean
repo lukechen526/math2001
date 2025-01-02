@@ -180,20 +180,88 @@ def B : ℕ → ℚ
   | n + 1 => B n + (n + 1 : ℚ) ^ 2
 
 example (n : ℕ) : B n = n * (n + 1) * (2 * n + 1) / 6 := by
-  sorry
+  simple_induction n with k IH
+  · -- base case
+    calc B 0 = 0 := by rw [B]
+      _ = 0 * (0 + 1) * (2 * 0 + 1) / 6 := by numbers
+  · -- inductive step
+    calc B (k + 1) = B k + (k + 1 : ℚ) ^ 2 := by rw [B]
+      _ = k * (k + 1) * (2 * k + 1) / 6 + (k + 1) ^ 2 := by rw [IH]
+      _ = (k + 1) * (k + 1 + 1) * (2 * (k + 1) + 1) / 6 := by ring
 
 def S : ℕ → ℚ
   | 0 => 1
   | n + 1 => S n + 1 / 2 ^ (n + 1)
 
 example (n : ℕ) : S n = 2 - 1 / 2 ^ n := by
-  sorry
+  simple_induction n with k IH
+  · -- base case
+    calc S 0 = 1 := by rw [S]
+      _ = 2 - 1 / 2 ^ 0 := by numbers
+  · -- inductive step
+    calc S (k + 1) = S k + 1 / 2 ^ (k + 1) := by rw [S]
+      _ = (2 - 1 / 2 ^ k) + 1 / 2 ^ (k + 1) := by rw [IH]
+      _ = 2 - 1 / 2 ^ (k + 1) := by ring
 
 example (n : ℕ) : 0 < n ! := by
-  sorry
+  simple_induction n with k IH
+  · -- base case
+    calc (0 : ℕ) ! = 1 := by rw [factorial]
+      _ > 0 := by numbers
+  · -- inductive step
+    calc (k + 1)! = (k + 1) * k ! := by rw [factorial]
+      _ > (k+1) * 0 := by rel [IH]
+      _ = 0 := by ring
 
 example {n : ℕ} (hn : 2 ≤ n) : Nat.Even (n !) := by
-  sorry
+  induction_from_starting_point n, hn with k hk IH
+  · -- base case
+    rw [factorial, factorial, factorial]
+    use 1
+    numbers
+  · -- inductive step
+    obtain ⟨t, ht⟩ := IH
+    use (k + 1) * t
+    calc (k + 1)!
+      = (k + 1) * k ! := by rw [factorial]
+    _ = (k + 1) * (2 * t) := by rw [ht]
+    _ = 2 * ((k + 1) * t) := by ring
+
+/-
+Theorem: For any natural number n ≥ 2, the factorial n! is even.
+
+Proof:
+We proceed by induction on n, starting from n = 2.
+
+Base Case (n = 2):
+We need to show that 2! is even.
+- Compute 2! = 2 × 1! = 2 × 1 = 2.
+- Clearly, 2 is even because 2 = 2 × 1.
+
+Inductive Step:
+Assume that for some k ≥ 2, k! is even. We need to show that (k + 1)! is also even.
+- By the induction hypothesis, there exists an integer t such that k! = 2 × t.
+- Now, compute (k + 1)!:
+  (k + 1)! = (k + 1) × k! = (k + 1) × (2 × t) = 2 × ((k + 1) × t)
+- This shows that (k + 1)! is even, since it is 2 times the integer (k + 1) × t.
+
+Conclusion:
+By induction, n! is even for all n ≥ 2.
+-/
+
+example {n : ℕ} (hn : 2 ≤ n) : Nat.Even (n !) := by
+  induction_from_starting_point n, hn with k hk IH
+  · -- base case
+    rw [factorial, factorial, factorial]
+    use 1
+    numbers
+  · -- inductive step
+    obtain ⟨t, ht⟩ := IH
+    use (k + 1) * t
+    calc (k + 1)!
+      = (k + 1) * k ! := by rw [factorial]
+    _ = (k + 1) * (2 * t) := by rw [ht]
+    _ = 2 * ((k + 1) * t) := by ring
 
 example (n : ℕ) : (n + 1) ! ≤ (n + 1) ^ n := by
   simple_induction n with k IH
