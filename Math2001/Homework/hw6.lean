@@ -13,26 +13,32 @@ Don't forget to compare with the text version,
 https://github.com/hrmacbeth/math2001/wiki/Homework-6,
 for clearer statements and any special instructions. -/
 
-@[autograded 4]
+@[autogradedProofProof 4]
 theorem problem1 : ¬ (∃ t : ℝ, t ≤ 5 ∧ 2 * t ≥ 12) := by
-  sorry
+  intro H
+  obtain ⟨t, ht1, ht2⟩ := H
+  have ht3 :=
+  calc 12 ≤ 2 * t := ht2
+    _ ≤ 2 * 5 := by rel [ht1]
+    _ = 10 := by numbers
+  numbers at ht3
 
-@[autograded 3]
+@[autogradedProofProof 3]
 theorem problem2 : ¬ (∃ x : ℝ, ∀ y : ℝ, y ≤ x) := by
   sorry
 
-@[autograded 3]
+@[autogradedProofProof 3]
 theorem problem3 (a : ℚ) : 3 * a + 2 < 11 ↔ a < 3 := by
   sorry
 
-@[autograded 6]
+@[autogradedProofProof 6]
 theorem problem4 (t : ℤ) : t ^ 2 + t + 3 ≡ 0 [ZMOD 5] ↔ t ≡ 1 [ZMOD 5] ∨ t ≡ 3 [ZMOD 5] := by
   sorry
 
-@[autograded 4]
+@[autogradedProofProof 4]
 theorem problem5 (P Q : Prop) : (P ∧ Q) ↔ (Q ∧ P) := by
   sorry
 
-@[autograded 5]
+@[autogradedProofProof 5]
 theorem problem6 (P : α → Prop) (Q : Prop) : ((∃ x, P x) ∧ Q) ↔ ∃ x, (P x ∧ Q) := by
   sorry
