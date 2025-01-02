@@ -27,12 +27,11 @@ example {p : ℚ} (hp : p ^ 2 ≤ 8) : p ≥ -5 := by
 example {a b : ℝ} (h1 : a - 5 * b = 4) (h2 : b + 2 = 3) : a = 9 ∧ b = 1 := by
   constructor
   · calc
-      a = 4 + 5 * b := by addarith [h1]
-      _ = -6 + 5 * (b + 2) := by ring
-      _ = -6 + 5 * 3 := by rw [h2]
+     a = 4 + 5 * b := by addarith [h1]
+      _ = 4 + 5 * (b + 2) - 10 := by ring
+      _ = 4 + 5 * 3 - 10 := by rw [h2]
       _ = 9 := by ring
   · addarith [h2]
-
 
 example {a b : ℝ} (h1 : a - 5 * b = 4) (h2 : b + 2 = 3) : a = 9 ∧ b = 1 := by
   have hb : b = 1 := by addarith [h2]
@@ -107,12 +106,15 @@ example {a : ℚ} (h : a - 1 ≥ 5) : a ≥ 6 ∧ 3 * a ≥ 10 := by
 
 example {x y : ℚ} (h : x + y = 5 ∧ x + 2 * y = 7) : x = 3 ∧ y = 2 := by
   obtain ⟨h1, h2⟩ := h
-  have h3 : y = 2 :=
-    calc
+  constructor
+  · calc
+     x = 2 * (x + y) - (x + 2 * y) := by ring
+          _ = 2 * 5 - 7 := by rw [h1, h2]
+          _ = 3 := by numbers
+  · calc
       y = (x + 2 * y) - (x + y) := by ring
-        _ = 7 - 5 := by rw [h1, h2]
-        _ = 2 := by ring
-
+          _ = 7 - 5 := by rw [h1, h2]
+          _ = 2 := by numbers
 
 example {a b : ℝ} (h1 : a * b = a) (h2 : a * b = b) :
     a = 0 ∧ b = 0 ∨ a = 1 ∧ b = 1 := by

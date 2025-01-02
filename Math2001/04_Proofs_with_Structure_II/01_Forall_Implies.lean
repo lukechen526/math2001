@@ -77,12 +77,13 @@ example : forall_sufficiently_large n : ℤ, n ^ 3 ≥ 4 * n ^ 2 + 7 := by
 
 
 example : Prime 2 := by
+  dsimp [Prime]
   constructor
   · numbers -- show `2 ≤ 2`
   intro m hmp
   have hp : 0 < 2 := by numbers
   have hmp_le : m ≤ 2 := Nat.le_of_dvd hp hmp
-  have h1m : 1 ≤ m := Nat.pos_of_dvd_of_pos hmp hp
+  have h1m : 0 < m := Nat.pos_of_dvd_of_pos hmp hp
   interval_cases m
   · left
     numbers -- show `1 = 1`

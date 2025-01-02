@@ -126,7 +126,15 @@ example (a b : ℤ) (h : ∃ q, b * q < a ∧ a < b * (q + 1)) : ¬b ∣ a := by
     calc b * k = a := by rw [hk]
       _ < b * (q + 1) := hq₂
   cancel b at h1
-  sorry
+  have h2 :=
+    calc
+      b * q < a := hq₁
+      _ = b * k := by rw [hk]
+  cancel b at h2
+  rw [Int.lt_iff_add_one_le] at h2
+  rw [← Int.not_lt] at h2
+  contradiction
+
 
 example {p : ℕ} (hp : 2 ≤ p)  (T : ℕ) (hTp : p < T ^ 2)
     (H : ∀ (m : ℕ), 1 < m → m < T → ¬ (m ∣ p)) :
@@ -138,14 +146,26 @@ example {p : ℕ} (hp : 2 ≤ p)  (T : ℕ) (hTp : p < T ^ 2)
   intro h_div
   obtain ⟨l, hl⟩ := h_div
   have : l ∣ p
-  · sorry
+  · use m
+    rw [mul_comm, hl]
   have hl1 :=
     calc m * 1 = m := by ring
       _ < p := hmp
       _ = m * l := hl
   cancel m at hl1
   have hl2 : l < T
-  · sorry
+  ·
+    have h' := Nat.lt_or_ge l T
+    obtain h | h := h'
+    · exact h
+    · have h'' :=
+       calc p = m * l := hl
+            _ ≥ T * T := by rel [h, hmT]
+            _ = T ^ 2 := by ring
+
+      have h''' := not_lt_of_ge h''
+      contradiction
+
   have : ¬ l ∣ p := H l hl1 hl2
   contradiction
 
@@ -163,10 +183,14 @@ example : Prime 79 := by
     constructor <;> numbers
   · use 19
     constructor <;> numbers
-  · sorry
-  · sorry
-  · sorry
-  · sorry
+  · use 15
+    constructor <;> numbers
+  · use 13
+    constructor <;> numbers
+  · use 11
+    constructor <;> numbers
+  · use 9
+    constructor <;> numbers
 
 /-! # Exercises -/
 
