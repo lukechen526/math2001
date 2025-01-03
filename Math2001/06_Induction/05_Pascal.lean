@@ -117,4 +117,4 @@ example (a : ℕ) : pascal a 1 = a + 1 := by
     calc
      pascal (k + 1) 1 = pascal (k + 1) 0 + pascal k (0 + 1) := by rw [h]
                     _ = 1 + (k + 1) := by rw [pascal, IH]
-                    _ = (k + 1) + 1 := by rw [Nat.add_comm]
+                    _ = (k + 1) + 1 := by ring
