@@ -3,7 +3,7 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
-	"onCreateCommand": "lake exe cache get!",
+	"onCreateCommand": "lake exe cache get! && lake build Library && lake build AutograderLib",
 	"customizations": {
 		"vscode": {
 			"extensions": [
