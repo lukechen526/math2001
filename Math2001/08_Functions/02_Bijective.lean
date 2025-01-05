@@ -127,9 +127,18 @@ example : ∀ f : Celestial → Celestial, Injective f → Bijective f := by
       apply h_sun
     · use moon
       apply h_moon
-  | moon, sun => sorry
-  | moon, moon => sorry
-
+  | moon, sun =>
+    intro y
+    cases y
+    · use moon
+      exact h_moon
+    · use sun
+      exact h_sun
+  | moon, moon =>
+    have : sun = moon
+    · apply hf
+      rw [h_sun, h_moon]
+    contradiction
 
 example : ¬ ∀ f : ℕ → ℕ, Injective f → Bijective f := by
   push_neg
@@ -154,7 +163,17 @@ example : ¬ ∀ f : ℕ → ℕ, Injective f → Bijective f := by
 
 
 example : Bijective (fun (x : ℝ) ↦ 4 - 3 * x) := by
-  sorry
+  constructor
+  · -- injective
+    intro x1 x2 hx
+    dsimp at hx
+    have h' : -3 * x1 = -3 * x2 := by addarith [hx]
+    cancel -3 at h'
+  · -- surjective
+    intro y
+    use (4 - y) / 3
+    dsimp
+    ring
 
 example : ¬ Bijective (fun (x : ℝ) ↦ 4 - 3 * x) := by
   sorry
@@ -164,7 +183,15 @@ example : Bijective (fun (x : ℝ) ↦ x ^ 2 + 2 * x) := by
   sorry
 
 example : ¬ Bijective (fun (x : ℝ) ↦ x ^ 2 + 2 * x) := by
-  sorry
+  dsimp [Bijective]
+  push_neg
+  left
+  dsimp [Injective]
+  push_neg
+  use -2, 0
+  constructor
+  · numbers
+  · numbers
 
 inductive Element
   | fire
@@ -182,7 +209,20 @@ def e : Element → Element
   | air => water
 
 example : Bijective e := by
-  sorry
+  dsimp [Bijective, Injective, Surjective]
+  constructor
+  · intro x1 x2 h
+    cases x1 <;> cases x2 <;> exhaust
+  · intro y
+    cases y
+    · use earth
+      exhaust
+    · use air
+      exhaust
+    · use fire
+      exhaust
+    · use water
+      exhaust
 
 example : ¬ Bijective e := by
   sorry
