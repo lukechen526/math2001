@@ -319,7 +319,48 @@ example : ¬ Surjective l := by
   cases x <;> exhaust
 
 example (f : X → Y) : Injective f ↔ ∀ x1 x2 : X, x1 ≠ x2 → f x1 ≠ f x2 := by
-  sorry
+  -- We need to prove that a function `f` is injective if and only if for all `x1` and `x2` in `X`,
+  -- if `x1` is not equal to `x2`, then `f x1` is not equal to `f x2`.
+
+  constructor
+  -- We split the proof into two directions: (1) If `f` is injective, then the condition holds,
+  -- and (2) If the condition holds, then `f` is injective.
+
+  · -- Direction 1: Assume `f` is injective and prove the condition.
+    intro h
+    -- `h` is the assumption that `f` is injective, i.e., `∀ x1 x2, f x1 = f x2 → x1 = x2`.
+    dsimp [Injective] at h
+    -- Simplify the definition of `Injective` in `h`.
+    intro x1 x2 hne
+    -- Assume `x1` and `x2` are distinct elements of `X`.
+    intro heq
+    -- Assume `f x1 = f x2`.
+    have := h heq
+    -- From the injectivity of `f`, we get `x1 = x2`.
+    contradiction
+    -- This contradicts our assumption that `x1 ≠ x2`, so the condition holds.
+
+  · -- Direction 2: Assume the condition holds and prove that `f` is injective.
+    intro h
+    -- `h` is the assumption that `∀ x1 x2, x1 ≠ x2 → f x1 ≠ f x2`.
+    dsimp [Injective]
+    -- Simplify the definition of `Injective`.
+    intro x1 x2 heq
+    -- Assume `f x1 = f x2`.
+    by_cases hne : x1 = x2
+    -- Consider two cases: either `x1 = x2` or `x1 ≠ x2`.
+
+    · -- Case 1: `x1 = x2`.
+      exact hne
+      -- If `x1 = x2`, then we are done.
+
+    · -- Case 2: `x1 ≠ x2`.
+      have := h x1 x2 hne
+      -- From the condition, we get `f x1 ≠ f x2`.
+      contradiction
+      -- This contradicts our assumption that `f x1 = f x2`, so `x1` must equal `x2`.
+      -- Therefore, `f` is injective.
+
 
 example : ∀ (f : ℚ → ℚ), Injective f → Injective (fun x ↦ f x + 1) := by
   sorry
