@@ -131,10 +131,10 @@ def b : Humour → Humour
   | sanguine => sanguine
 
 def c : Humour → Humour
-  | melancholic => sorry
-  | choleric => sorry
-  | phlegmatic => sorry
-  | sanguine => sorry
+  | melancholic => sanguine
+  | choleric => phlegmatic
+  | phlegmatic => melancholic
+  | sanguine => phlegmatic
 
 example : b ∘ a = c := by
   ext x
@@ -143,25 +143,63 @@ example : b ∘ a = c := by
 
 def u (x : ℝ) : ℝ := 5 * x + 1
 
-noncomputable def v (x : ℝ) : ℝ := sorry
+noncomputable def v (x : ℝ) : ℝ := (x - 1) / 5
 
 example : Inverse u v := by
-  sorry
+  constructor
+  · ext x
+    calc
+     v (u x) = 5 * ((x - 1) / 5) + 1 := by rfl
+     _ = x - 1 + 1 := by ring
+     _ = x := by ring
+     _ = id x := by rfl
+  · ext X
+    calc
+    u (v X) = 5 * ((X - 1) / 5) + 1 := by rfl
+     _ = X - 1 + 1 := by ring
+     _ = X := by ring
+     _ = id X := by rfl
+
 
 example {f : X → Y} (hf : Injective f) {g : Y → Z} (hg : Injective g) :
     Injective (g ∘ f) := by
-  sorry
+
+  dsimp [Injective]
+  intro x1 x2 h
+  apply hf
+  apply hg
+  exact h
+
 
 example {f : X → Y} (hf : Surjective f) {g : Y → Z} (hg : Surjective g) :
     Surjective (g ∘ f) := by
-  sorry
+  intro z
+  obtain ⟨y, hy⟩ := hg z
+  obtain ⟨x, hx⟩ := hf y
+  use x
+  calc
+    (g ∘ f) x = g (f x) := by rfl
+    _ = g y := by rw [hx]
+    _ = z := by rw [hy]
 
 example {f : X → Y} (hf : Surjective f) : ∃ g : Y → X, f ∘ g = id := by
-  sorry
+  choose g hg using hf
+  use g
+  ext x
+  exact hg x
 
 example {f : X → Y} {g : Y → X} (h : Inverse f g) : Inverse g f := by
-  sorry
+  obtain ⟨h1, h2⟩ := h
+  exact ⟨h2, h1⟩
 
 example {f : X → Y} {g1 g2 : Y → X} (h1 : Inverse f g1) (h2 : Inverse f g2) :
     g1 = g2 := by
-  sorry
+
+  obtain ⟨h11, h12⟩ := h1
+  obtain ⟨h21, h22⟩ := h2
+  calc
+   g1 = g1 ∘ id := by rfl
+   _ = g1 ∘ (f ∘ g2) := by rw [h22]
+   _ = (g1 ∘ f) ∘ g2 := by rfl
+   _ = id ∘ g2 := by rw [h11]
+   _ = g2 := by rfl
