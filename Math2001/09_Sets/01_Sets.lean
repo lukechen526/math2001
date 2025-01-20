@@ -232,7 +232,21 @@ example : {m : ℤ | m ≥ 10} ⊈ {n : ℤ | n ^ 3 - 7 * n ^ 2 ≥ 4 * n} := by
 
 namespace Int
 example : {n : ℤ | Even n} = {a : ℤ | a ≡ 6 [ZMOD 2]} := by
-  sorry
+  ext a
+  dsimp
+  constructor
+  · intro h1
+    obtain ⟨k, hk⟩ := h1
+    use k - 3
+    calc
+      a - 6 = 2 * k - 6 := by rw [hk]
+      _ = 2 * (k - 3) := by ring
+  · intro h1
+    obtain ⟨k, hk⟩ := h1
+    use k + 3
+    calc
+      a = 2 * k + 6 := by addarith [hk]
+      _ = 2 * (k + 3) := by ring
 
 example : {n : ℤ | Even n} ≠ {a : ℤ | a ≡ 6 [ZMOD 2]} := by
   sorry
@@ -243,16 +257,51 @@ example : {t : ℝ | t ^ 2 - 5 * t + 4 = 0} = {4} := by
   sorry
 
 example : {t : ℝ | t ^ 2 - 5 * t + 4 = 0} ≠ {4} := by
-  sorry
+  ext
+  dsimp
+  push_neg
+  use 1
+  left
+  constructor
+  · numbers
+  · numbers
+
 
 example : {k : ℤ | 8 ∣ 6 * k} = {l : ℤ | 8 ∣ l} := by
   sorry
 
 example : {k : ℤ | 8 ∣ 6 * k} ≠ {l : ℤ | 8 ∣ l} := by
-  sorry
+  ext
+  dsimp
+  push_neg
+  use 4
+  left
+  constructor
+  · use 3
+    numbers
+  · apply Int.not_dvd_of_exists_lt_and_lt
+    use 0
+    constructor
+    · numbers
+    · numbers
+
 
 example : {k : ℤ | 7 ∣ 9 * k} = {l : ℤ | 7 ∣ l} := by
-  sorry
+  ext x
+  dsimp
+  constructor
+  · intro h
+    obtain ⟨a, ha⟩ := h
+    use 4 * x - 3 * a
+    calc
+      x = 28 * x - 3 * (9 * x) := by ring
+      _ = 4 * (7 * x) - 3 * (9 * x) := by ring
+      _ = 7 * (4 * x - 3 * a) := by rw [ha]; ring
+  · intro h
+    obtain ⟨a, ha⟩ := h
+    use 9 * a
+    rw [ha]
+    ring
 
 example : {k : ℤ | 7 ∣ 9 * k} ≠ {l : ℤ | 7 ∣ l} := by
   sorry
@@ -262,7 +311,41 @@ example : {1, 2, 3} = {1, 2} := by
   sorry
 
 example : {1, 2, 3} ≠ {1, 2} := by
-  sorry
+  ext
+  push_neg
+  use 3
+  left
+  constructor
+  . dsimp
+    right
+    right
+    exact rfl
+  . dsimp
+    push_neg
+    constructor
+    · numbers
+    · numbers
 
 example : {x : ℝ | x ^ 2 + 3 * x + 2 = 0} = {-1, -2} := by
-  sorry
+  ext x
+  dsimp
+  constructor
+  · intro h
+    have hx :=
+    calc
+      (x + 1) * (x + 2) = x ^ 2 + 3 * x + 2  := by ring
+      _ = 0 := by rw [h]
+    rw [mul_eq_zero] at hx
+    obtain hx | hx := hx
+    · left
+      addarith [hx]
+    · right
+      addarith [hx]
+  · intro h
+    obtain h | h := h
+    · calc
+        x ^ 2 + 3 * x + 2 = (-1) ^ 2 + 3 * (-1) + 2 := by rw [h]
+        _ = 0 := by numbers
+    · calc
+        x ^ 2 + 3 * x + 2 = (-2) ^ 2 + 3 * (-2) + 2 := by rw [h]
+        _ = 0 := by numbers
