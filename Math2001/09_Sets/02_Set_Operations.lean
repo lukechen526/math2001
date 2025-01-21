@@ -190,5 +190,36 @@ example {s t : Set X} (hs : SizeAtLeastTwo s) (ht : SizeAtLeastTwo t)
       dsimp [SizeAtLeastTwo, SizeAtLeastThree] at *
       obtain ⟨x1, x2, hx1, hx2, hx3⟩ := hs
       obtain ⟨y1, y2, hy1, hy2, hy3⟩ := ht
-      push_neg at hst
-      sorry
+      by_cases h' : x1 = y1
+      · by_cases h'' : x2 = y2
+        · have hst' : SizeAtLeastTwo (s ∩ t) := by
+           use x1, x2
+           have h''' : x1 ∈ s ∩ t := by
+            rw [← h'] at hy2
+            exact ⟨hx2, hy2⟩
+           have h'''' : x2 ∈ s ∩ t := by
+            rw [← h''] at hy3
+            exact ⟨hx3, hy3⟩
+           exhaust
+          contradiction
+        · use x1, x2, y2
+          exhaust
+      · by_cases h'' : x2 = y2
+        · use x1, x2, y1
+          exhaust
+        · by_cases h''' : x1 = y2
+          · by_cases h'''' : x2 = y1
+            · have hst' : SizeAtLeastTwo (s ∩ t) := by
+                use x1, x2
+                have h''' : x1 ∈ s ∩ t := by
+                  rw [← h'''] at hy3
+                  exact ⟨hx2, hy3⟩
+                have h'''' : x2 ∈ s ∩ t := by
+                  rw [← h''''] at hy2
+                  exact ⟨hx3, hy2⟩
+                exhaust
+              contradiction
+            · use x1, x2, y1
+              exhaust
+          · use x1, x2, y2
+            exhaust
