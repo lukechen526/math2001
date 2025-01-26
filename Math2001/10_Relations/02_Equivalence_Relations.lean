@@ -168,14 +168,44 @@ section
 local infix:50 "∼" => fun (a b : ℤ) ↦ ∃ m n, m > 0 ∧ n > 0 ∧ a * m = b * n
 
 example : Reflexive (· ∼ ·) := by
-  sorry
+  dsimp [Reflexive]
+  intro x
+  use 1, 1
+  constructor
+  · numbers
+  · constructor
+    · numbers
+    · ring
 
 example : Symmetric (· ∼ ·) := by
-  sorry
+  dsimp [Symmetric]
+  intro x y h
+  obtain ⟨m, n, hm, hn, h⟩ := h
+  use n, m
+  constructor
+  · apply hn
+  · constructor
+    · apply hm
+    · rw [h]
 
 example : Transitive (· ∼ ·) := by
-  sorry
-
+  dsimp [Transitive]
+  intro x y z hxy hyz
+  obtain ⟨m1, n1, hm1, hn1, h1⟩ := hxy
+  obtain ⟨m2, n2, hm2, hn2, h2⟩ := hyz
+  use m1 * m2, n1 * n2
+  constructor
+  · exact Int.mul_pos hm1 hm2
+  · constructor
+    · exact Int.mul_pos hn1 hn2
+    · calc
+        x * (m1 * m2) = (m1 * m2) * x := by ring
+        _             = m2 * (x * m1) := by ring
+        _             = m2 * (y * n1) := by rw [h1]
+        _             = n1 * (y * m2) := by ring
+        _             = n1 * (z * n2) := by rw [h2]
+        _             = (n1 * n2) * z := by ring
+        _             = z * (n1 * n2) := by ring
 end
 
 
@@ -183,14 +213,25 @@ section
 local infix:50 "∼" => fun ((a, b) : ℕ × ℕ) (c, d) ↦ a + d = b + c
 
 example : Reflexive (· ∼ ·) := by
-  sorry
+  dsimp [Reflexive]
+  intro (a, b)
+  dsimp
+  ring
+
 
 example : Symmetric (· ∼ ·) := by
-  sorry
+  dsimp [Symmetric]
+  intro (a, b) (c, d) h
+  dsimp at h
+  dsimp
+  rw [add_comm c b, add_comm d a, h]
 
 example : Transitive (· ∼ ·) := by
-  sorry
-
+  dsimp [Transitive]
+  intro (a, b) (c, d) (e, f) h1 h2
+  dsimp at h1 h2
+  dsimp
+  addarith [h1, h2]
 end
 
 
@@ -199,12 +240,42 @@ local infix:50 "∼" => fun ((a, b) : ℤ × ℤ) (c, d) ↦
   ∃ m n, m > 0 ∧ n > 0 ∧ m * b * (b ^ 2 - 3 * a ^ 2) = n * d * (d ^ 2 - 3 * c ^ 2)
 
 example : Reflexive (· ∼ ·) := by
-  sorry
+  dsimp [Reflexive]
+  intro (a, b)
+  use 1, 1
+  constructor
+  · numbers
+  constructor
+  · numbers
+  ring
 
 example : Symmetric (· ∼ ·) := by
-  sorry
+  dsimp [Symmetric]
+  intro (a, b) (c, d) h
+  obtain ⟨m, n, hm, hn, h⟩ := h
+  use n, m
+  constructor
+  · apply hn
+  constructor
+  · apply hm
+  · dsimp
+    rw [h]
 
 example : Transitive (· ∼ ·) := by
-  sorry
-
-end
+  dsimp [Transitive]
+  intro (a, b) (c, d) (e, f) h1 h2
+  obtain ⟨m1, n1, hm1, hn1, h1⟩ := h1
+  obtain ⟨m2, n2, hm2, hn2, h2⟩ := h2
+  use m1 * m2, n1 * n2
+  dsimp at *
+  constructor
+  · apply Int.mul_pos hm1 hm2
+  constructor
+  · apply Int.mul_pos hn1 hn2
+  · calc
+      m1 * m2 * b * (b ^ 2 - 3 * a ^2) = m2 * m1 * b * (b ^ 2 - 3 * a ^2) := by ring
+      _ = m2 * (m1 * b * (b ^ 2 - 3 * a ^2) ) := by ring
+      _ = m2 * (n1 * d * (d ^ 2 - 3 * c ^ 2)) := by rw [h1]
+      _ = n1 * (m2 * d * (d ^ 2 - 3 * c ^ 2)) := by ring
+      _ = n1 * (n2 * f * (f ^ 2 - 3 * e ^ 2)) := by rw [h2]
+      _ = n1 * n2 * f * (f ^ 2 - 3 * e ^ 2) := by ring
