@@ -23,18 +23,7 @@ example (t : ℝ) : t ∈ {x : ℝ | -1 < x} ∪ {x : ℝ | x < 1} := by
 example : {1, 2} ∪ {2, 4} = {1, 2, 4} := by
   ext n
   dsimp
-  constructor
-  · intro h
-    obtain (h | h) | (h | h) := h
-    · left
-      apply h
-    · right
-      left
-      apply h
-  -- and much, much more
-    · sorry
-    · sorry
-  · sorry
+  exhaust
 
 
 example : {2, 1} ∪ {2, 4} = {1, 2, 4} := by
@@ -173,12 +162,37 @@ example : {n : ℤ | 5 ∣ n} ∩ {n : ℤ | 8 ∣ n} ⊆ {n : ℤ | 40 ∣ n} :
     _ = 40 * (5 * k2 - 3 * k1) := by ring
 
 
-example :
-    {n : ℤ | 3 ∣ n} ∪ {n : ℤ | 2 ∣ n} ⊆ {n : ℤ | n ^ 2 ≡ 1 [ZMOD 6]}ᶜ := by
-  dsimp [Set.subset_def, Set.mem_union, Set.mem_compl_iff]
+example : {n : ℤ | 3 ∣ n} ∪ {n : ℤ | 2 ∣ n} ⊆ {n : ℤ | n ^ 2 ≡ 1 [ZMOD 6]}ᶜ := by
   intro n hn
-  obtain ⟨k1, hk1⟩ | ⟨k2, hk2⟩ := hn
-  sorry
+  obtain (h3 | h2) := hn
+  · intro h
+    dsimp at h3 h
+    have h_mod_3_from_h : n ^ 2 ≡ 1 [ZMOD 3] := by
+      obtain ⟨c, hc⟩ := h
+      use 2 * c
+      calc n ^ 2 - 1 = 6 * c := hc
+          _ = 3 * (2 * c) := by ring
+    have h_mod_3_from_h3 : n ^ 2 ≡ 0 [ZMOD 3] := by
+      obtain ⟨k, hk⟩ := h3
+      rw [hk]
+      use 3 * k ^ 2
+      ring
+    have contra : 1 ≡ 0 [ZMOD 3] := by exact (h_mod_3_from_h.symm).trans h_mod_3_from_h3
+    numbers at contra
+  · intro h
+    dsimp at h2 h
+    have h_mod_2_from_h : n ^ 2 ≡ 1 [ZMOD 2] := by
+      obtain ⟨c, hc⟩ := h
+      use 3 * c
+      calc n ^ 2 - 1 = 6 * c := hc
+          _ = 2 * (3 * c) := by ring
+    have h_mod_2_from_h2 : n ^ 2 ≡ 0 [ZMOD 2] := by
+      obtain ⟨k, hk⟩ := h2
+      rw [hk]
+      use 2 * k ^ 2
+      ring
+    have contra : 1 ≡ 0 [ZMOD 2] := by exact (h_mod_2_from_h.symm).trans h_mod_2_from_h2
+    numbers at contra
 
 def SizeAtLeastTwo (s : Set X) : Prop := ∃ x1 x2 : X, x1 ≠ x2 ∧ x1 ∈ s ∧ x2 ∈ s
 def SizeAtLeastThree (s : Set X) : Prop :=
