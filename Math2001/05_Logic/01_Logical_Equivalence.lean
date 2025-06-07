@@ -176,6 +176,7 @@ example (P Q : Prop) : ¬(P ∨ Q) ↔ (¬P ∧ ¬Q) := by
       · right
         apply hQ
       contradiction
+  sorry
 
 example {P Q : α → Prop} (h1 : ∀ x, P x → Q x) (h2 : ∀ x, P x) : ∀ x, Q x := by
   intro x

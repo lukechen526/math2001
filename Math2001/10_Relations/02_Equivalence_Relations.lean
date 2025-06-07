@@ -227,15 +227,9 @@ example : Symmetric (· ∼ ·) := by
   rw [add_comm c b, add_comm d a, h]
 
 example : Transitive (· ∼ ·) := by
-  dsimp [Transitive]
-  intro (a, b) (c, d) (e, f) h1 h2
-  dsimp at h1 h2
-  dsimp
-  calc
-    a + f =
+  sorry
 
 end
-
 
 section
 local infix:50 "∼" => fun ((a, b) : ℤ × ℤ) (c, d) ↦

@@ -171,6 +171,7 @@ example (n : ℤ) : ∃ m ≥ n, Odd m := by
       n + 1 = 2 * s + 1 := by rw [hs];
       _ = 2 * s + 1 := by ring
   use n
+  sorry
 
 example (a b c : ℤ) : Even (a - b) ∨ Even (a + c) ∨ Even (b - c) := by
   obtain ha := Int.even_or_odd a

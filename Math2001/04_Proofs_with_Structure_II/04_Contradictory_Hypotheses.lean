@@ -95,10 +95,11 @@ example {a b c : ℕ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     obtain h_le | h_succ_le := hn
     -- the case a ≤  2
     · have hn1 :=  le_or_succ_le b 1
-
+      sorry
 
     -- the case 3 ≤ a
     . exact h_succ_le
+
 
 
 

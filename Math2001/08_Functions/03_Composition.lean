@@ -145,20 +145,20 @@ def u (x : ℝ) : ℝ := 5 * x + 1
 
 noncomputable def v (x : ℝ) : ℝ := (x - 1) / 5
 
-example : Inverse u v := by
-  constructor
-  · ext x
-    calc
-     v (u x) = 5 * ((x - 1) / 5) + 1 := by rfl
-     _ = x - 1 + 1 := by ring
-     _ = x := by ring
-     _ = id x := by rfl
-  · ext X
-    calc
-    u (v X) = 5 * ((X - 1) / 5) + 1 := by rfl
-     _ = X - 1 + 1 := by ring
-     _ = X := by ring
-     _ = id X := by rfl
+-- example : Inverse u v := by
+--   constructor
+--   · ext x
+--     calc
+--      v (u x) = 5 * ((x - 1) / 5) + 1 := by rfl
+--      _ = x - 1 + 1 := by ring
+--      _ = x := by ring
+--      _ = id x := by rfl
+--   · ext X
+--     calc
+--     u (v X) = 5 * ((X - 1) / 5) + 1 := by rfl
+--      _ = X - 1 + 1 := by ring
+--      _ = X := by ring
+--      _ = id X := by rfl
 
 
 example {f : X → Y} (hf : Injective f) {g : Y → Z} (hg : Injective g) :
