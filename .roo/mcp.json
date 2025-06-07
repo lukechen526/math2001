@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "lean-lsp": {
+      "command": "uvx",
+      "args": [
+        "lean-lsp-mcp"
+      ],
+      "env": {
+        "LEAN_PROJECT_PATH": "/workspaces/math2001/"
+      },
+      "disabled": false,
+      "alwaysAllow": [
+        "lean_file_contents",
+        "lean_diagnostic_messages",
+        "lean_goal",
+        "lean_build",
+        "lean_multi_attempt"
+      ]
+    }
+  }
+}
