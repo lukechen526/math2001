@@ -77,28 +77,55 @@ theorem problem4 (n : ℕ) :
       4 ^ 2 ≡ 16 [ZMOD 7] := by numbers
       _ ≡ 2 + 7 * 2 [ZMOD 7] := by numbers
       _ ≡ 2 [ZMOD 7] := by extra
-  | k + 3 =>
+  | k + 1 =>
     have IH := problem4 k
-    rw [pow_add, pow_three]
+    rw [pow_succ]
     obtain h | h | h := IH
-    · left
-      rel [h]
-      numbers
     · right
       right
-      rel [h]
-      numbers
+      calc
+        4 * 4 ^ k ≡ 4 * 1 [ZMOD 7] := by rel [h]
+        _ = 4 := by ring
+    · left
+      calc
+        4 * 4 ^ k ≡ 4 * 2 [ZMOD 7] := by rel [h]
+        _ = 8 := by ring
+        _ ≡ 1 + 1 * 7 [ZMOD 7] := by numbers
+        _ ≡ 1 [ZMOD 7] := by extra
     · right
       left
-      rel [h]
-      numbers
+      calc
+        4 * 4 ^ k ≡ 4 * 4 [ZMOD 7] := by rel [h]
+        _ = 16 := by ring
+        _ ≡ 2 + 2 * 7 [ZMOD 7] := by numbers
+        _ ≡ 2 [ZMOD 7] := by extra
 
 @[autogradedProof 5]
 theorem problem5 {a : ℝ} (ha : -1 ≤ a) : ¬ ∃ n : ℕ, (1 + a) ^ n < 1 + n * a := by
   push_neg
-  sorry
+  intro n
+  simple_induction n with k IH
+  · calc
+      1 + 0 * a = 1 := by ring
+      _ ≤ (1 + a) ^ 0 := by rw [pow_zero]
+  · have h_a_ge_0 : 1 + a ≥ 0 := by addarith [ha]
+    calc
+      (1 + a) ^ (k + 1) = (1 + a) * (1 + a) ^ k := by ring
+      _ ≥ (1 + a) * (1 + k * a) := by rel [IH]
+      _ = 1 + (k + 1) * a + k * a ^ 2 := by ring
+      _ ≥ 1 + (k + 1) * a := by extra
 
 @[autogradedProof 4]
 theorem problem6 : forall_sufficiently_large n : ℕ, (3:ℤ) ^ n ≥ 2 ^ n + 100 := by
   dsimp
-  sorry
+  use 10
+  intro n hn
+  induction_from_starting_point n, hn with k hk IH
+  · numbers
+  · calc
+      (3 : ℤ) ^ (k + 1) = 3 * 3 ^ k := by ring
+      _ ≥ 3 * (2 ^ k + 100) := by rel [IH]
+      _ = 2 * 2 ^ k + 2 ^ k + 300 := by ring
+      _ = 2 ^ (k + 1) + 2 ^ k + 300 := by ring
+      _ = 2 ^ (k + 1) + 100 + (2 ^ k + 200) := by ring
+      _ ≥ 2 ^ (k + 1) + 100 := by extra
