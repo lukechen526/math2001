@@ -224,41 +224,50 @@ infix:50 "≺" => fun ((x1, y1) : ℝ × ℝ) (x2, y2) ↦ (x1 ≤ x2 ∧ y1 ≤
 
 @[autogradedProof 2]
 theorem problem61a : Reflexive (· ≺ ·) := by
-  sorry
-
-@[autogradedProof 2]
-theorem problem61b : ¬ Reflexive (· ≺ ·) := by
-  sorry
-
+  intro a
+  dsimp
+  constructor
+  · apply le_refl
+  · apply le_refl
 
 /- Problem 6.2: prove one of these, delete the other -/
 
 @[autogradedProof 2]
-theorem problem62a : Symmetric (· ≺ ·) := by
-  sorry
-
-@[autogradedProof 2]
 theorem problem62b : ¬ Symmetric (· ≺ ·) := by
-  sorry
+  dsimp [Symmetric]
+  push_neg
+  use (1,1), (2,2)
+  constructor
+  · dsimp
+    constructor
+    · numbers
+    · numbers
+  · dsimp
+    left
+    numbers
 
 
 /- Problem 6.3: prove one of these, delete the other -/
 
 @[autogradedProof 2]
 theorem problem63a : AntiSymmetric (· ≺ ·) := by
-  sorry
-
-@[autogradedProof 2]
-theorem problem63b : ¬ AntiSymmetric (· ≺ ·) := by
-  sorry
+  intro a b h1 h2
+  dsimp at h1 h2
+  obtain ⟨ha1, ha2⟩ := h1
+  obtain ⟨hb1, hb2⟩ := h2
+  apply Prod.ext
+  · apply le_antisymm ha1 hb1
+  · apply le_antisymm ha2 hb2
 
 
 /- Problem 6.4: prove one of these, delete the other -/
 
 @[autogradedProof 2]
 theorem problem64a : Transitive (· ≺ ·) := by
-  sorry
-
-@[autogradedProof 2]
-theorem problem64b : ¬ Transitive (· ≺ ·) := by
-  sorry
+  intro a b c h1 h2
+  dsimp at *
+  obtain ⟨ha1, ha2⟩ := h1
+  obtain ⟨hb1, hb2⟩ := h2
+  constructor
+  · apply le_trans ha1 hb1
+  · apply le_trans ha2 hb2
