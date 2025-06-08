@@ -104,9 +104,33 @@ theorem problem3a : {1, 2, 3} ∩ {2, 3, 4} ⊆ {2, 3, 6} := by
 @[autogradedProof 4]
 theorem problem4 : { r : ℤ | r ≡ 11 [ZMOD 15] }
     = { s : ℤ | s ≡ 2 [ZMOD 3] } ∩ { t : ℤ | t ≡ 1 [ZMOD 5] } := by
-  sorry
-
-
+  ext x
+  dsimp
+  constructor
+  · intro h
+    constructor
+    · obtain ⟨k, hk⟩ := h
+      use 5 * k + 3
+      calc
+        x - 2 = (x - 11) + 9 := by ring
+        _ = 15 * k + 9 := by rw [hk]
+        _ = 3 * (5 * k + 3) := by ring
+    · obtain ⟨k, hk⟩ := h
+      use 3 * k + 2
+      calc
+        x - 1 = (x - 11) + 10 := by ring
+        _ = 15 * k + 10 := by rw [hk]
+        _ = 5 * (3 * k + 2) := by ring
+  · intro h
+    obtain ⟨h1, h2⟩ := h
+    obtain ⟨k, hk⟩ := h1
+    obtain ⟨l, hl⟩ := h2
+    use 2 * k - 3 * l
+    calc
+      x - 11 = 10 * (x - 2) - 9 * (x - 1) := by ring
+      _ = 10 * (3 * k) - 9 * (5 * l) := by rw [hk, hl]
+      _ = 30 * k - 45 * l := by ring
+      _ = 15 * (2 * k - 3 * l) := by ring
 
 /-! ### Problem 5 starts here -/
 
