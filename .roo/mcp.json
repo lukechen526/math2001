@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "lean-lsp": {
+      "command": "uvx",
+      "args": [
+        "lean-lsp-mcp"
+      ],
+      "env": {
+        "LEAN_PROJECT_PATH": "/workspaces/math2001/"
+      },
+      "disabled": false,
+      "alwaysAllow": [
+        "lean_file_contents",
+        "lean_diagnostic_messages",
+        "lean_goal",
+        "lean_build",
+        "lean_multi_attempt",
+        "lean_term_goal",
+        "lean_hover_info",
+        "lean_proofs_complete",
+        "lean_completions",
+        "lean_declaration_file",
+        "lean_leansearch",
+        "lean_multi_attempt</server_name>\n<arguments>\n{\n  \"file_path\": \"/workspaces/math2001/Math2001/09_Sets/02_Set_Operations.lean\",\n  \"line\": 179,\n  \"snippets\": [\n    \"  case inl h3 =>\",\n    \"    mod_cases hn : n % 6\",\n    \"    all_goals numbers\",\n    \"  case inr h2 =>\",\n    \"    mod_cases hn : n % 6\",\n    \"    all_goals numbers\"\n  ]\n}\n</arguments>\n</use_mcp_tool>"
+      ]
+    }
+  }
+}

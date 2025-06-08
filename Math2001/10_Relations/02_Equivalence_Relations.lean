@@ -234,7 +234,6 @@ example : Transitive (· ∼ ·) := by
   addarith [h1, h2]
 end
 
-
 section
 local infix:50 "∼" => fun ((a, b) : ℤ × ℤ) (c, d) ↦
   ∃ m n, m > 0 ∧ n > 0 ∧ m * b * (b ^ 2 - 3 * a ^ 2) = n * d * (d ^ 2 - 3 * c ^ 2)

@@ -67,7 +67,7 @@ example (a b : ℝ) (h1 : -b ≤ a) (h2 : a ≤ b) : a ^ 2 ≤ b ^ 2 := by
 example (a b : ℝ) (h : a ≤ b) : a ^ 3 ≤ b ^ 3 := by
   have h2 : b - a ≥ 0 := by addarith [h]
   calc
-    a ^ 3 ≤ a ^3  + (b - a)* ((b - a)^2 + 3(b + a)^2) /4 := by extra
+    a ^ 3 ≤ a ^3  + (b - a)* ((b - a)^2 + 3 * (b + a)^2) /4 := by extra
         _ = b ^ 3 := by ring
 
 /-! # Exercises -/

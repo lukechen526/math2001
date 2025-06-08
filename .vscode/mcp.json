@@ -1,0 +1,13 @@
+{
+    "servers": {
+        "lean-lsp": {
+            "command": "uvx",
+            "args": [
+                "lean-lsp-mcp"
+            ],
+            "env": {
+                "LEAN_PROJECT_PATH": "/workspaces/math2001/"
+            }
+        }
+    }
+}

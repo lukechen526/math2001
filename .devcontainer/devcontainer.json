@@ -3,11 +3,18 @@
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
-	"onCreateCommand": "lake exe cache get! && lake build Library && lake build AutograderLib",
+	"features": {
+		"ghcr.io/va-h/devcontainers-features/uv:1": {}
+	},
+	"onCreateCommand": "lake exe cache get! && lake build Library && lake build AutograderLib && elan default stable",
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"leanprover.lean4"
+				"leanprover.lean4",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"codezombiech.gitignore",
+				"RooVeterinaryInc.roo-cline"
 			]
 		}
 	}

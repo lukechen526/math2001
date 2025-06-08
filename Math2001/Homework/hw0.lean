@@ -11,7 +11,7 @@ Don't forget to compare with the text version
 for clearer statements and any special instructions. -/
 
 
-@[autogradedProofProof 5]
+@[autogradedProof 5]
 theorem problem1 {n : ℤ} (hn : n ≥ 5) : n ^ 2 > 2 * n + 11 :=
   calc
     n ^ 2 = n * n := by ring
