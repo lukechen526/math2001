@@ -21,7 +21,14 @@ def B : ℕ → ℚ
 
 @[autogradedProof 4]
 theorem problem1 (n : ℕ) : B n = n * (n + 1) * (2 * n + 1) / 6 := by
-  sorry
+  simple_induction n with k IH
+  · -- base case
+    dsimp [B]
+    numbers
+  · -- induction step
+    dsimp [B]
+    rw [IH]
+    ring
 
 
 def S : ℕ → ℚ
@@ -30,7 +37,14 @@ def S : ℕ → ℚ
 
 @[autogradedProof 4]
 theorem problem2 (n : ℕ) : S n = 2 - 1 / 2 ^ n := by
-  sorry
+  simple_induction n with k IH
+  · -- base case
+    dsimp [S]
+    numbers
+  · -- induction step
+    dsimp [S]
+    rw [IH]
+    ring
 
 
 def a : ℕ → ℤ
@@ -39,8 +53,22 @@ def a : ℕ → ℤ
 
 @[autogradedProof 4]
 theorem problem3 : forall_sufficiently_large (n : ℕ), a n ≥ 10 * 2 ^ n := by
-  sorry
-
+  use 5
+  intro n hn
+  induction_from_starting_point n, hn with k hk IH
+  · -- base case
+    dsimp [a]
+    numbers
+  · -- induction step
+    dsimp [a]
+    calc
+      a (k + 1) = 3 * a k - 5 := by rw [a]
+      _ ≥ 3 * (10 * 2 ^ k) - 5 := by rel [IH]
+      _ = 30 * 2 ^ k - 5 := by ring
+      _ = 10 * 2 ^ (k + 1) + 10 * 2 ^ k - 5 := by ring
+      _ ≥ 10 * 2 ^ (k + 1) + 10 * 2 ^ 5 - 5 := by rel [hk]
+      _ = 10 * 2 ^ (k + 1) + 315 := by ring
+      _ ≥ 10 * 2 ^ (k + 1) := by extra
 
 def c : ℕ → ℤ
   | 0 => 3
@@ -49,7 +77,20 @@ def c : ℕ → ℤ
 
 @[autogradedProof 4]
 theorem problem4 (n : ℕ) : c n = 2 * 2 ^ n + (-2) ^ n := by
-  sorry
+  two_step_induction n with k IH1 IH2
+  · -- base case 0
+    dsimp [c]
+    numbers
+  · -- base case 1
+    dsimp [c]
+    numbers
+  · -- induction step
+    calc
+      c (k + 2) = 4 * c k := by rw [c]
+      _ = 4 * (2 * 2 ^ k + (-2) ^ k) := by rw [IH1]
+      _ = 2 * 2 ^ (k + 2) + 4 * (-2) ^ k := by ring
+      _ = 2 * 2 ^ (k + 2) + (-2) ^ 2 * (-2) ^ k := by ring
+      _ = 2 * 2 ^ (k + 2) + (-2) ^ (k + 2) := by ring
 
 
 def q : ℕ → ℤ
@@ -59,9 +100,37 @@ def q : ℕ → ℤ
 
 @[autogradedProof 4]
 theorem problem5 (n : ℕ) : q n = (n:ℤ) ^ 3 + 1 := by
-  sorry
+  two_step_induction n with k IH1 IH2
+  · -- base case 0
+    dsimp [q]
+    numbers
+  · -- base case 1
+    dsimp [q]
+    numbers
+  · -- induction step
+    calc
+      q (k + 2) = 2 * q (k + 1) - q k + 6 * k + 6 := by rw [q]
+      _ = 2 * (((k + 1):ℤ) ^ 3 + 1) - ((k:ℤ) ^ 3 + 1) + 6 * k + 6 := by rw [IH1, IH2]
+      _ = ((k:ℤ) + 2) ^ 3 + 1 := by ring
 
 
 @[autogradedProof 5]
 theorem problem6 (n : ℕ) (hn : 0 < n) : ∃ a x, Odd x ∧ n = 2 ^ a * x := by
-  sorry
+  obtain h_even | h_odd := even_or_odd n
+  · -- n is even
+    obtain ⟨m, hm⟩ := h_even
+    have h_pos : 0 < m := by addarith [hn, hm]
+    have IH := problem6 m h_pos
+    obtain ⟨a, x, h_odd_x, h_m_eq⟩ := IH
+    use a + 1, x
+    constructor
+    · apply h_odd_x
+    · calc
+        n = 2 * m := hm
+        _ = 2 * (2 ^ a * x) := by rw [h_m_eq]
+        _ = 2 ^ (a + 1) * x := by ring
+  · -- n is odd
+    use 0, n
+    constructor
+    · apply h_odd
+    · ring
