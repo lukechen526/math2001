@@ -19,37 +19,87 @@ for clearer statements and any special instructions. -/
 
 @[autogradedProof 4]
 theorem problem1a : { m : ℤ | m ≥ 10 } ⊆ { n : ℤ | n ^ 3 - 6 * n ^ 2 ≥ 4 * n } := by
-  sorry
-
-@[autogradedProof 4]
-theorem problem1b : { m : ℤ | m ≥ 10 } ⊈ { n : ℤ | n ^ 3 - 6 * n ^ 2 ≥ 4 * n } := by
-  sorry
+  intro x hx
+  dsimp
+  have hx10 : x ≥ 10 := hx
+  have h_poly_ge_0 : x ^ 2 - 6 * x - 4 ≥ 0 := by
+    have h_factor_poly : x ^ 2 - 6 * x - 4 = (x - 10) * (x + 4) + 36 := by ring
+    rw [h_factor_poly]
+    have h_prod_ge_0 : (x - 10) * (x + 4) ≥ 0 := by
+      have h1 : x - 10 ≥ 0 := by addarith [hx10]
+      have h2 : x + 4 > 0 := by addarith [hx10]
+      calc
+        (x - 10) * (x + 4) ≥ 0 * (x + 4) := by rel [h1]
+        _ = 0 := by ring
+    addarith [h_prod_ge_0]
+  have h_ge_0 : x * (x ^ 2 - 6 * x - 4) ≥ 0 := by
+    have h1 : x ≥ 0 := by addarith [hx10]
+    calc
+      x * (x ^ 2 - 6 * x - 4) ≥ 0 * (x ^ 2 - 6 * x - 4) := by rel [h1]
+      _ = 0 := by ring
+  have h_final : x ^ 3 - 6 * x ^ 2 - 4 * x ≥ 0 := by
+    have h_factor : x ^ 3 - 6 * x ^ 2 - 4 * x = x * (x ^ 2 - 6 * x - 4) := by ring
+    rw [h_factor]
+    exact h_ge_0
+  addarith [h_final]
 
 
 /- Problem 2: prove one of these, delete the other -/
 
 @[autogradedProof 3]
-theorem problem2a : { t : ℝ | t ^ 2 - 3 * t + 2 = 0 } = { s : ℝ | s = 2 } := by
-  sorry
-
-@[autogradedProof 3]
 theorem problem2b : { t : ℝ | t ^ 2 - 3 * t + 2 = 0 } ≠ { s : ℝ | s = 2 } := by
-  sorry
+  intro h
+  have h1 : 1 ∈ { t : ℝ | t ^ 2 - 3 * t + 2 = 0 } := by
+    dsimp
+    ring
+  have h2 : 1 ∉ { s : ℝ | s = 2 } := by
+    dsimp
+    numbers
+  rw [h] at h1
+  contradiction
 
 
 /- Problem 3: prove one of these, delete the other -/
 
 @[autogradedProof 3]
 theorem problem3a : {1, 2, 3} ∩ {2, 3, 4} ⊆ {2, 3, 6} := by
-  sorry
-
-
-@[autogradedProof 3]
-theorem problem3b : ¬ {1, 2, 3} ∩ {2, 3, 4} ⊆ {2, 3, 6} := by
-  sorry
-
-
-/- Problem 4 -/
+  intro x hx
+  dsimp at *
+  obtain ⟨(h1 | h2 | h3), (h4 | h5 | h6)⟩ := hx
+  · have : 1 = 2 := by
+      calc
+        1 = x := by rel [h1]
+        _ = 2 := by rel [h4]
+    numbers at this
+  · have : 1 = 3 := by
+      calc
+        1 = x := by rel [h1]
+        _ = 3 := by rel [h5]
+    numbers at this
+  · have : 1 = 4 := by
+      calc
+        1 = x := by rel [h1]
+        _ = 4 := by rel [h6]
+    numbers at this
+  · left
+    assumption
+  · have : 2 = 3 := by
+      calc
+        2 = x := by rel [h2]
+        _ = 3 := by rel [h5]
+    numbers at this
+  · have : 2 = 4 := by
+      calc
+        2 = x := by rel [h2]
+        _ = 4 := by rel [h6]
+    numbers at this
+  · right; left; assumption
+  · right; left; assumption
+  · have : 3 = 4 := by
+      calc
+        3 = x := by rel [h3]
+        _ = 4 := by rel [h6]
+    numbers at this
 
 @[autogradedProof 4]
 theorem problem4 : { r : ℤ | r ≡ 11 [ZMOD 15] }
