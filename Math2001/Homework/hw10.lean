@@ -142,46 +142,78 @@ local infix:50 "∼" => fun (a b : ℤ) ↦ ∃ m n, m > 0 ∧ n > 0 ∧ a * m =
 
 @[autogradedProof 2]
 theorem problem51a : Reflexive (· ∼ ·) := by
-  sorry
-
-@[autogradedProof 2]
-theorem problem51b : ¬ Reflexive (· ∼ ·) := by
-  sorry
+  intro a
+  dsimp
+  use 1, 1
+  constructor
+  · numbers
+  · constructor
+    · numbers
+    · ring
 
 
 /- Problem 5.2: prove one of these, delete the other -/
 
 @[autogradedProof 2]
 theorem problem52a : Symmetric (· ∼ ·) := by
-  sorry
-
-@[autogradedProof 2]
-theorem problem52b : ¬ Symmetric (· ∼ ·) := by
-  sorry
+  intro a b h
+  dsimp at *
+  obtain ⟨m, n, hm, hn, h_eq⟩ := h
+  use n, m
+  constructor
+  · assumption
+  · constructor
+    · assumption
+    · rw [h_eq]
 
 
 /- Problem 5.3: prove one of these, delete the other -/
 
 @[autogradedProof 2]
-theorem problem53a : AntiSymmetric (· ∼ ·) := by
-  sorry
-
-@[autogradedProof 2]
 theorem problem53b : ¬ AntiSymmetric (· ∼ ·) := by
-  sorry
+  intro h
+  dsimp [AntiSymmetric] at h
+  have h1 : 2 ∼ 3 := by
+    use 3, 2
+    constructor
+    · numbers
+    · constructor
+      · numbers
+      · ring
+  have h2 : 3 ∼ 2 := by
+    use 2, 3
+    constructor
+    · numbers
+    · constructor
+      · numbers
+      · ring
+  have h_eq : 2 = 3 := by
+    have h_contra := h h1 h2
+    numbers at h_contra
+  numbers at h_eq
 
 
 /- Problem 5.4: prove one of these, delete the other -/
 
 @[autogradedProof 2]
 theorem problem54a : Transitive (· ∼ ·) := by
-  sorry
-
-@[autogradedProof 2]
-theorem problem54b : ¬ Transitive (· ∼ ·) := by
-  sorry
-
-
+  intro a b c h1 h2
+  dsimp at *
+  obtain ⟨m1, n1, hm1, hn1, h_eq1⟩ := h1
+  obtain ⟨m2, n2, hm2, hn2, h_eq2⟩ := h2
+  use m1 * m2, n1 * n2
+  constructor
+  · apply mul_pos hm1 hm2
+  · constructor
+    · apply mul_pos hn1 hn2
+    · calc
+        a * (m1 * m2) = (a * m1) * m2 := by ring
+        _ = (b * n1) * m2 := by rw [h_eq1]
+        _ = b * (n1 * m2) := by ring
+        _ = (b * m2) * n1 := by ring
+        _ = (c * n2) * n1 := by rw [h_eq2]
+        _ = c * (n2 * n1) := by ring
+      ring
 
 /-! ### Problem 6 starts here -/
 
